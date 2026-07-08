@@ -1,0 +1,50 @@
+---
+import Layout from "@/components/Layout.astro";
+import SectionIntro from "@/components/SectionIntro.astro";
+import CtaBand from "@/components/CtaBand.astro";
+import { getSiteSettings } from "@/data/site";
+
+const site = await getSiteSettings();
+---
+
+<Layout
+  title="Over Bas"
+  description="Maak kennis met Bas van der Scheer, fotograaf achter Bas Fotografie in Naaldwijk en gemeente Westland."
+  currentPath="/over-bas/"
+>
+  <section class="about-hero">
+    <div>
+      <p class="eyebrow">Over Bas</p>
+      <h1>Een rustige blik achter de camera</h1>
+      <p>{site.profileIntro}</p>
+    </div>
+    <figure>
+      <img src={site.profileImage} alt={`Portret van ${site.person}`} />
+      <figcaption>{site.profileImageCaption}</figcaption>
+    </figure>
+  </section>
+
+  <section class="split-section">
+    <SectionIntro
+      eyebrow="Manier van werken"
+      title="Mooi portret, zonder harde pose"
+      body={site.profileBody}
+    />
+    <div class="feature-list">
+      <article>
+        <h3>Voorzichtig met privacy</h3>
+        <p>Beelden van kinderen en gezinnen komen alleen online wanneer ze expliciet zijn goedgekeurd.</p>
+      </article>
+      <article>
+        <h3>Lokaal in het Westland</h3>
+        <p>Bekend met Naaldwijk en omliggende plekken waar licht, rust en ruimte samenkomen.</p>
+      </article>
+      <article>
+        <h3>Persoonlijk contact</h3>
+        <p>Geen anonieme boekingsstraat, maar direct contact via formulier, mail of WhatsApp.</p>
+      </article>
+    </div>
+  </section>
+
+  <CtaBand title={`Neem contact op met ${site.person}`} body="Stuur je idee door, ook als je nog twijfelt over pakket, locatie of timing." />
+</Layout>

@@ -1,0 +1,28 @@
+---
+import { getPackages } from "@/data/site";
+const packages = await getPackages();
+---
+
+<div class="package-grid">
+  {
+    packages.map((item) => (
+      <article class:list={["package-card", item.featured && "is-featured"]}>
+        {item.featured && <p class="package-badge">Meest gekozen</p>}
+        <div class="package-top">
+          <p class="eyebrow">{item.duration}</p>
+          <h3>{item.name}</h3>
+          <p class="package-price">{item.price}</p>
+        </div>
+        <p>{item.summary}</p>
+        <ul>
+          {item.features.map((feature) => (
+            <li>{feature}</li>
+          ))}
+        </ul>
+        <a class="button button-secondary" href={`/contact/?pakket=${item.name}`}>
+          Vraag {item.name} aan
+        </a>
+      </article>
+    ))
+  }
+</div>

@@ -1,0 +1,51 @@
+---
+import Layout from "@/components/Layout.astro";
+import SectionIntro from "@/components/SectionIntro.astro";
+import CtaBand from "@/components/CtaBand.astro";
+import { getProcessSteps } from "@/data/site";
+
+const processSteps = await getProcessSteps();
+---
+
+<Layout
+  title="Werkwijze"
+  description="Zo werkt een fotoshoot bij Bas Fotografie: aanvragen, afstemmen, fotograferen en opleveren via een online galerij."
+  currentPath="/werkwijze/"
+>
+  <section class="page-hero compact">
+    <p class="eyebrow">Werkwijze</p>
+    <h1>Rustige voorbereiding, echte aandacht tijdens de shoot</h1>
+    <p>
+      Een fotoshoot hoeft niet ingewikkeld te voelen. Bas houdt het helder en persoonlijk, van eerste bericht tot galerij.
+    </p>
+  </section>
+
+  <section class="section">
+    <div class="timeline">
+      {
+        processSteps.map((step) => (
+          <article>
+            <p class="eyebrow">{step.title}</p>
+            <h2>{step.title}</h2>
+            <p>{step.body}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="split-section section-muted">
+    <SectionIntro
+      eyebrow="Op locatie"
+      title="Een plek waar je jezelf kunt zijn"
+      body="Denk aan een park, strand, tuin, huiselijke setting of een andere plek in het Westland waar jullie ontspannen zijn."
+    />
+    <div class="photo-strip" aria-label="Visuele placeholders voor locaties">
+      <img src="/assets/portfolio/gezinnen-01.webp" alt="Placeholder voor gezinslocatie" loading="lazy" />
+      <img src="/assets/portfolio/kinderen-02.webp" alt="Placeholder voor kinderlocatie" loading="lazy" />
+      <img src="/assets/portfolio/huisdieren-02.webp" alt="Placeholder voor huisdierlocatie" loading="lazy" />
+    </div>
+  </section>
+
+  <CtaBand />
+</Layout>

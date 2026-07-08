@@ -1,0 +1,97 @@
+---
+import { getSiteSettings, navItems } from "@/data/site";
+import "@/styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+  currentPath?: string;
+}
+
+const {
+  title,
+  description,
+  currentPath = Astro.url.pathname,
+} = Astro.props;
+const site = await getSiteSettings();
+const resolvedTitle = title ?? site.name;
+const resolvedDescription = description ?? site.description;
+const pageTitle =
+  resolvedTitle === site.name ? site.name : `${resolvedTitle} | ${site.name}`;
+---
+
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={resolvedDescription} />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href={new URL(currentPath, Astro.site).toString()} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={resolvedDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="nl_NL" />
+    <meta name="theme-color" content="#273637" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=IBM+Plex+Mono:wght@500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Direct naar inhoud</a>
+    <header class="site-header">
+      <nav class="nav-shell" aria-label="Hoofdnavigatie">
+        <a class="brand" href="/" aria-label="Bas Fotografie home">
+          <span class="brand-mark" aria-hidden="true">BF</span>
+          <span>
+            <strong>{site.name}</strong>
+            <small>{site.region}</small>
+          </span>
+        </a>
+        <div class="nav-links" id="site-menu">
+          {
+            navItems.map((item) => (
+              <a
+                href={item.href}
+                aria-current={currentPath === item.href ? "page" : undefined}
+              >
+                {item.label}
+              </a>
+            ))
+          }
+        </div>
+      </nav>
+    </header>
+    <main id="main">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="footer-grid">
+        <div>
+          <p class="eyebrow">Bas Fotografie</p>
+          <h2>{site.tagline}</h2>
+          <p>
+            Portretten van kinderen, gezinnen en huisdieren op locatie in Naaldwijk en gemeente Westland.
+          </p>
+        </div>
+        <div>
+          <p class="footer-title">Contact</p>
+          <a href={`mailto:${site.email}`}>{site.email}</a>
+          <a href={site.phoneHref}>{site.phoneDisplay}</a>
+          <a href={site.instagram} rel="noreferrer">Instagram</a>
+        </div>
+        <div>
+          <p class="footer-title">Pagina's</p>
+          <a href="/pakketten/">Pakketten</a>
+          <a href="/contact/">Aanvraag doen</a>
+          <a href="/privacy/">Privacy</a>
+        </div>
+      </div>
+      <p class="footer-bottom">© {new Date().getFullYear()} {site.name}. Alle rechten voorbehouden.</p>
+    </footer>
+  </body>
+</html>

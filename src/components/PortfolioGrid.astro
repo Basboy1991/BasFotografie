@@ -1,0 +1,66 @@
+---
+import { getPortfolioItems } from "@/data/site";
+
+interface Props {
+  limit?: number;
+  interactive?: boolean;
+}
+
+const { limit, interactive = false } = Astro.props;
+const portfolioItems = await getPortfolioItems();
+const items = typeof limit === "number" ? portfolioItems.slice(0, limit) : portfolioItems;
+const filters = ["Alles", "Kinderen", "Gezinnen", "Huisdieren", "Portretten"];
+---
+
+{
+  interactive && (
+    <div class="filter-bar" aria-label="Portfoliofilters">
+      {filters.map((filter) => (
+        <button
+          class="filter-button"
+          type="button"
+          data-filter={filter}
+          aria-pressed={filter === "Alles" ? "true" : "false"}
+        >
+          {filter}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+<div class="portfolio-board" data-portfolio-board>
+  {
+    items.map((item, index) => (
+      <article class={`photo-card photo-card-${(index % 6) + 1}`} data-category={item.category}>
+        <a href="/contact/" aria-label={`${item.title}: shoot aanvragen`}>
+          <img src={item.image} alt={item.alt} loading={index < 2 ? "eager" : "lazy"} />
+          <span class="photo-label">
+            <strong>{item.title}</strong>
+            <small>{item.category} · {item.note}</small>
+          </span>
+        </a>
+      </article>
+    ))
+  }
+</div>
+
+{
+  interactive && (
+    <script>
+      const board = document.querySelector("[data-portfolio-board]");
+      const buttons = document.querySelectorAll("[data-filter]");
+
+      buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const filter = button.getAttribute("data-filter");
+          buttons.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
+          board?.querySelectorAll("[data-category]").forEach((card) => {
+            const shouldShow = filter === "Alles" || card.getAttribute("data-category") === filter;
+            card.toggleAttribute("hidden", !shouldShow);
+          });
+        });
+      });
+    </script>
+  )
+}
