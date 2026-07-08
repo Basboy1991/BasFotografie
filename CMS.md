@@ -22,11 +22,13 @@ SANITY_STUDIO_DATASET=production
 npm run cms
 ```
 
-4. Importeer de huidige basiscontent in een lege dataset:
+4. Importeer de huidige basiscontent in de ingestelde dataset:
 
 ```bash
 npm run cms:import
 ```
+
+De import gebruikt `SANITY_STUDIO_DATASET`, daarna `PUBLIC_SANITY_DATASET`, en valt alleen terug op `production` als er geen dataset is ingesteld.
 
 ## Wat is bewerkbaar?
 
