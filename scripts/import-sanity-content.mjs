@@ -11,7 +11,7 @@ const env = {
 const dataset =
   env.SANITY_STUDIO_DATASET || env.PUBLIC_SANITY_DATASET || "production";
 const seedFile = resolve("sanity/initial-content.ndjson");
-const sanityCommand = process.platform === "win32" ? "sanity.cmd" : "sanity";
+const sanityCliEntry = resolve("node_modules/@sanity/cli/bin/run.js");
 
 if (!existsSync(seedFile)) {
   console.error(`Sanity seed file not found: ${seedFile}`);
@@ -21,11 +21,12 @@ if (!existsSync(seedFile)) {
 console.log(`Importing Sanity seed content into dataset "${dataset}".`);
 console.log("Set SANITY_STUDIO_DATASET or PUBLIC_SANITY_DATASET to target another dataset.");
 
-const result = spawnSync(
-  sanityCommand,
-  ["datasets", "import", seedFile, dataset, "--replace"],
-  { stdio: "inherit" },
-);
+const command = existsSync(sanityCliEntry) ? process.execPath : "sanity";
+const args = existsSync(sanityCliEntry)
+  ? [sanityCliEntry, "datasets", "import", "--dataset", dataset, seedFile, "--replace"]
+  : ["datasets", "import", "--dataset", dataset, seedFile, "--replace"];
+
+const result = spawnSync(command, args, { stdio: "inherit" });
 
 if (result.error) {
   console.error(result.error.message);

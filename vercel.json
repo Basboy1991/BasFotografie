@@ -1,0 +1,14 @@
+{
+  "redirects": [
+    {
+      "source": "/studio",
+      "destination": "https://bas-fotografie-cms.sanity.studio/",
+      "permanent": false
+    },
+    {
+      "source": "/studio/:path*",
+      "destination": "https://bas-fotografie-cms.sanity.studio/:path*",
+      "permanent": false
+    }
+  ]
+}

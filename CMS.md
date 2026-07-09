@@ -2,6 +2,14 @@
 
 Deze site gebruikt Sanity als CMS, met lokale fallback-content zolang er geen Sanity project is ingesteld.
 
+## Actieve setup
+
+- Project: `bas-fotografie`
+- Project ID: `k2m6gkis`
+- Dataset: `production`
+- Studio: https://bas-fotografie-cms.sanity.studio/
+- Vercel snelkoppeling: https://bas-fotografie.vercel.app/studio
+
 ## Eenmalige setup
 
 1. Maak een Sanity project aan via `npx sanity init` of via sanity.io.
@@ -29,6 +37,18 @@ npm run cms:import
 ```
 
 De import gebruikt `SANITY_STUDIO_DATASET`, daarna `PUBLIC_SANITY_DATASET`, en valt alleen terug op `production` als er geen dataset is ingesteld.
+
+## Vercel variabelen
+
+Zet deze waarden in Vercel voor Production, Preview en Development:
+
+```bash
+PUBLIC_SANITY_PROJECT_ID=k2m6gkis
+PUBLIC_SANITY_DATASET=production
+PUBLIC_SANITY_API_VERSION=2026-07-09
+SANITY_STUDIO_PROJECT_ID=k2m6gkis
+SANITY_STUDIO_DATASET=production
+```
 
 ## Wat is bewerkbaar?
 
