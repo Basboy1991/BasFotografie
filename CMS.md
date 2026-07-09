@@ -8,6 +8,7 @@ Deze site gebruikt Sanity als CMS, met lokale fallback-content zolang er geen Sa
 - Project ID: `k2m6gkis`
 - Dataset: `production`
 - Studio: https://bas-fotografie-cms.sanity.studio/
+- Vercel snelkoppeling: https://bas-fotografie.vercel.app/studio
 
 ## Eenmalige setup
 
