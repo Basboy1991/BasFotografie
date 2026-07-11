@@ -1,28 +1,41 @@
 ---
 import { getPackages } from "@/data/site";
+
 const packages = await getPackages();
+const legacyNames: Record<string, string> = {
+  Basic: "Kort",
+  Extra: "Ruim",
+  Premium: "Serie",
+};
 ---
 
 <div class="package-grid">
   {
-    packages.map((item) => (
-      <article class:list={["package-card", item.featured && "is-featured"]}>
-        {item.featured && <p class="package-badge">Meest gekozen</p>}
-        <div class="package-top">
-          <p class="eyebrow">{item.duration}</p>
-          <h3>{item.name}</h3>
+    packages.map((item, index) => {
+      const displayName = legacyNames[item.name] ?? item.name;
+
+      return (
+        <article class:list={["package-card", item.featured && "is-featured"]}>
+          <span class="package-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+          <div class="package-top">
+            <p class="eyebrow">{item.duration}</p>
+            <h3>{displayName}</h3>
+            {item.featured && <p class="package-badge">vaak gekozen</p>}
+          </div>
           <p class="package-price">{item.price}</p>
-        </div>
-        <p>{item.summary}</p>
-        <ul>
-          {item.features.map((feature) => (
-            <li>{feature}</li>
-          ))}
-        </ul>
-        <a class="button button-secondary" href={`/contact/?pakket=${item.name}`}>
-          Vraag {item.name} aan
-        </a>
-      </article>
-    ))
+          <div class="package-details">
+            <p>{item.summary}</p>
+            <ul>
+              {item.features.map((feature) => (
+                <li>{feature}</li>
+              ))}
+            </ul>
+          </div>
+          <a class="text-link package-link" href={`/contact/?pakket=${item.name}`}>
+            Kies {displayName.toLowerCase()} <span aria-hidden="true">→</span>
+          </a>
+        </article>
+      );
+    })
   }
 </div>

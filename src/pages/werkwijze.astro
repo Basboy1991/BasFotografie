@@ -14,18 +14,18 @@ const processSteps = await getProcessSteps();
 >
   <section class="page-hero compact">
     <p class="eyebrow">Werkwijze</p>
-    <h1>Rustige voorbereiding, echte aandacht tijdens de shoot</h1>
+    <h1>Ik houd het graag rustig en duidelijk</h1>
     <p>
-      Een fotoshoot hoeft niet ingewikkeld te voelen. Bas houdt het helder en persoonlijk, van eerste bericht tot galerij.
+      Een fotoshoot hoeft niet ingewikkeld te voelen. Vanaf je eerste bericht heb je rechtstreeks contact met mij.
     </p>
   </section>
 
   <section class="section">
     <div class="timeline">
       {
-        processSteps.map((step) => (
+        processSteps.map((step, index) => (
           <article>
-            <p class="eyebrow">{step.title}</p>
+            <span class="step-number">{String(index + 1).padStart(2, "0")}</span>
             <h2>{step.title}</h2>
             <p>{step.body}</p>
           </article>
@@ -36,14 +36,14 @@ const processSteps = await getProcessSteps();
 
   <section class="split-section section-muted">
     <SectionIntro
-      eyebrow="Op locatie"
-      title="Een plek waar je jezelf kunt zijn"
+      eyebrow="De plek"
+      title="Ergens waar jullie niet eerst hoeven te wennen."
       body="Denk aan een park, strand, tuin, huiselijke setting of een andere plek in het Westland waar jullie ontspannen zijn."
     />
-    <div class="photo-strip" aria-label="Visuele placeholders voor locaties">
-      <img src="/assets/portfolio/gezinnen-01.webp" alt="Placeholder voor gezinslocatie" loading="lazy" />
-      <img src="/assets/portfolio/kinderen-02.webp" alt="Placeholder voor kinderlocatie" loading="lazy" />
-      <img src="/assets/portfolio/huisdieren-02.webp" alt="Placeholder voor huisdierlocatie" loading="lazy" />
+    <div class="photo-strip" aria-label="Beeldrichtingen voor fotoshoots op locatie">
+      <img src="/assets/portfolio/gezinnen-01.webp" alt="Abstracte beeldmarkering voor een gezin op locatie" loading="lazy" />
+      <img src="/assets/portfolio/kinderen-02.webp" alt="Abstracte beeldmarkering voor een kind op locatie" loading="lazy" />
+      <img src="/assets/portfolio/huisdieren-02.webp" alt="Abstracte beeldmarkering voor een huisdier op locatie" loading="lazy" />
     </div>
   </section>
 

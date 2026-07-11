@@ -33,11 +33,11 @@ const filters = ["Alles", "Kinderen", "Gezinnen", "Huisdieren", "Portretten"];
   {
     items.map((item, index) => (
       <article class={`photo-card photo-card-${(index % 6) + 1}`} data-category={item.category}>
-        <a href="/contact/" aria-label={`${item.title}: shoot aanvragen`}>
+        <a href="/contact/" aria-label={`${item.title}: vraag Bas naar een soortgelijke shoot`}>
           <img src={item.image} alt={item.alt} loading={index < 2 ? "eager" : "lazy"} />
           <span class="photo-label">
-            <strong>{item.title}</strong>
-            <small>{item.category} · {item.note}</small>
+            <strong>{item.category}</strong>
+            <span>{item.title}</span>
           </span>
         </a>
       </article>
