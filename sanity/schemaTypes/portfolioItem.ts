@@ -40,6 +40,13 @@ export const portfolioItemType = defineType({
       initialValue: "Goedgekeurde foto",
     }),
     defineField({
+      name: "description",
+      title: "Beschrijving bij de foto",
+      type: "text",
+      rows: 4,
+      description: "Korte tekst die naast de foto verschijnt in de portfolio-detailweergave.",
+    }),
+    defineField({
       name: "layoutSize",
       title: "Layoutgrootte",
       type: "string",

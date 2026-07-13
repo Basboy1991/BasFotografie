@@ -35,6 +35,7 @@ export type PortfolioItem = {
   image: string;
   alt: string;
   note: string;
+  description: string;
   layoutSize?: "standaard" | "groot";
 };
 
@@ -132,6 +133,7 @@ export const fallbackPortfolioItems: PortfolioItem[] = [
     image: "/assets/portfolio/kinderen-01.webp",
     alt: "Placeholder voor kinderportret op locatie in het Westland",
     note: "Goedgekeurde foto volgt",
+    description: "Een spontaan moment buiten, met ruimte voor beweging en een rustige blik.",
     layoutSize: "groot",
   },
   {
@@ -140,6 +142,7 @@ export const fallbackPortfolioItems: PortfolioItem[] = [
     image: "/assets/portfolio/kinderen-02.webp",
     alt: "Placeholder voor rustig kinderportret",
     note: "Privacy-veilige placeholder",
+    description: "Een klein portretmoment waarin de aandacht vanzelf naar de blik gaat.",
     layoutSize: "standaard",
   },
   {
@@ -148,6 +151,7 @@ export const fallbackPortfolioItems: PortfolioItem[] = [
     image: "/assets/portfolio/gezinnen-01.webp",
     alt: "Placeholder voor gezinsfotografie in Naaldwijk",
     note: "Goedgekeurde foto volgt",
+    description: "Samen op pad, dicht bij elkaar en zonder dat het beeld geposeerd hoeft te voelen.",
     layoutSize: "groot",
   },
   {
@@ -156,6 +160,7 @@ export const fallbackPortfolioItems: PortfolioItem[] = [
     image: "/assets/portfolio/gezinnen-02.webp",
     alt: "Placeholder voor gezinsportret op locatie",
     note: "Privacy-veilige placeholder",
+    description: "Een zachte gezinsfoto met aandacht voor de verbinding tussen de mensen.",
     layoutSize: "standaard",
   },
   {
@@ -164,6 +169,7 @@ export const fallbackPortfolioItems: PortfolioItem[] = [
     image: "/assets/portfolio/huisdieren-01.webp",
     alt: "Placeholder voor huisdierfotografie",
     note: "Goedgekeurde foto volgt",
+    description: "Een rustig huisdierportret waarin karakter en nieuwsgierigheid centraal staan.",
     layoutSize: "standaard",
   },
   {
@@ -172,6 +178,7 @@ export const fallbackPortfolioItems: PortfolioItem[] = [
     image: "/assets/portfolio/huisdieren-02.webp",
     alt: "Placeholder voor detailrijk huisdierportret",
     note: "Privacy-veilige placeholder",
+    description: "Details in vacht, houding en blik geven dit portret zijn eigen energie.",
     layoutSize: "groot",
   },
   {
@@ -180,6 +187,7 @@ export const fallbackPortfolioItems: PortfolioItem[] = [
     image: "/assets/portfolio/portretten-01.webp",
     alt: "Placeholder voor portretfotografie met helder licht",
     note: "Goedgekeurde foto volgt",
+    description: "Helder portretlicht en een ontspannen houding brengen het persoonlijke verhaal naar voren.",
     layoutSize: "groot",
   },
   {
@@ -188,6 +196,7 @@ export const fallbackPortfolioItems: PortfolioItem[] = [
     image: "/assets/portfolio/portretten-02.webp",
     alt: "Placeholder voor persoonlijk portret",
     note: "Privacy-veilige placeholder",
+    description: "Een eenvoudig profiel waarin licht en stilte het beeld dragen.",
     layoutSize: "standaard",
   },
   {
@@ -196,6 +205,7 @@ export const fallbackPortfolioItems: PortfolioItem[] = [
     image: "/assets/portfolio/kinderen-03.webp",
     alt: "Placeholder voor spontaan kinderdetail",
     note: "Goedgekeurde foto volgt",
+    description: "Een klein detail uit de serie dat laat zien hoe mooi het onverwachte kan zijn.",
   },
   {
     title: "Rustige serie",
@@ -203,6 +213,7 @@ export const fallbackPortfolioItems: PortfolioItem[] = [
     image: "/assets/portfolio/gezinnen-03.webp",
     alt: "Placeholder voor gezinsserie",
     note: "Privacy-veilige placeholder",
+    description: "Een serie ontstaat uit meerdere kleine momenten die samen één verhaal vertellen.",
   },
   {
     title: "Op ooghoogte",
@@ -210,6 +221,7 @@ export const fallbackPortfolioItems: PortfolioItem[] = [
     image: "/assets/portfolio/huisdieren-03.webp",
     alt: "Placeholder voor huisdier op ooghoogte",
     note: "Goedgekeurde foto volgt",
+    description: "Op ooghoogte ontstaat een eerlijk en rustig portret met veel aandacht voor karakter.",
   },
   {
     title: "Natuurlijk portret",
@@ -217,6 +229,7 @@ export const fallbackPortfolioItems: PortfolioItem[] = [
     image: "/assets/portfolio/portretten-03.webp",
     alt: "Placeholder voor natuurlijk portret op locatie",
     note: "Privacy-veilige placeholder",
+    description: "Een natuurlijk portret met zacht licht en genoeg ruimte om jezelf te blijven.",
   },
 ];
 
@@ -328,6 +341,7 @@ export async function getPortfolioItems(): Promise<PortfolioItem[]> {
       image,
       alt,
       note,
+      description,
       layoutSize
     }`,
   );

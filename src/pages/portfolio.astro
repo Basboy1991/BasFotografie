@@ -3,6 +3,12 @@ import Layout from "@/components/Layout.astro";
 import PortfolioGrid from "@/components/PortfolioGrid.astro";
 import SectionIntro from "@/components/SectionIntro.astro";
 import CtaBand from "@/components/CtaBand.astro";
+
+const requestedCategory = Astro.url.searchParams.get("category") ?? undefined;
+const selectedPhoto = Astro.url.searchParams.get("photo") ?? undefined;
+const selectedCategory = ["Kinderen", "Gezinnen", "Huisdieren", "Portretten"].includes(requestedCategory ?? "")
+  ? requestedCategory
+  : undefined;
 ---
 
 <Layout
@@ -12,18 +18,20 @@ import CtaBand from "@/components/CtaBand.astro";
 >
   <section class="page-hero compact">
     <p class="eyebrow">Portfolio</p>
-    <h1>Selectietafel voor kinderen, gezinnen, huisdieren en portretten</h1>
+    <h1>{selectedCategory ? `Portfolio ${selectedCategory.toLowerCase()}` : "Selectietafel voor kinderen, gezinnen, huisdieren en portretten"}</h1>
     <p>
-      De site gebruikt nu privacy-veilige placeholders. Zodra de definitieve selectie is goedgekeurd, worden deze vervangen door echte portfoliofoto's.
+      {selectedCategory
+        ? "Een rustige serie met beelden die naast elkaar hun eigen verhaal vertellen."
+        : "Blader per categorie door een rustige selectie beelden en open elke foto voor het verhaal ernaast."}
     </p>
   </section>
 
   <section class="section">
     <SectionIntro
-      title="Filter op shootsoort"
-      body="Kies de categorie die het dichtst bij jouw aanvraag ligt."
+      title={selectedCategory ? `Serie ${selectedCategory.toLowerCase()}` : "Filter op shootsoort"}
+      body="Kies een categorie om de serie te openen."
     />
-    <PortfolioGrid interactive />
+    <PortfolioGrid interactive selectedCategory={selectedCategory} selectedPhoto={selectedPhoto} />
   </section>
 
   <CtaBand title="Wil je zelf op deze selectietafel komen?" body="Vraag een shoot aan en vertel wat je wilt vastleggen." />

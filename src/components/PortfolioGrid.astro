@@ -4,68 +4,125 @@ import { getPortfolioItems } from "@/data/site";
 interface Props {
   limit?: number;
   interactive?: boolean;
+  showcase?: boolean;
+  selectedCategory?: string;
+  selectedPhoto?: string;
 }
 
-const { limit, interactive = false } = Astro.props;
+const { limit, interactive = false, showcase = false, selectedCategory, selectedPhoto } = Astro.props;
 const portfolioItems = await getPortfolioItems();
 const items = typeof limit === "number" ? portfolioItems.slice(0, limit) : portfolioItems;
 const filters = ["Alles", "Kinderen", "Gezinnen", "Huisdieren", "Portretten"];
+const categories = filters.slice(1);
+const categoryDescriptions: Record<string, string> = {
+  Kinderen: "Spontane blikken, beweging en kleine momenten buiten.",
+  Gezinnen: "Verbinding in beeld, rustig en zonder opgelegde poses.",
+  Huisdieren: "Karakter, energie en aandacht voor de details die je herkent.",
+  Portretten: "Persoonlijke portretten met ruimte voor licht, rust en eigenheid.",
+};
+const groupedItems = categories.map((category) => ({
+  category,
+  items: portfolioItems.filter((item) => item.category === category),
+}));
+const filteredItems = selectedCategory && categories.includes(selectedCategory)
+  ? items.filter((item) => item.category === selectedCategory)
+  : items;
+const selectedItem = selectedPhoto ? filteredItems.find((item) => item.title === selectedPhoto) : undefined;
+const visibleItems = selectedItem ? [selectedItem] : filteredItems;
 ---
 
-{
-  interactive && (
-    <div class="filter-bar" aria-label="Portfoliofilters">
-      {filters.map((filter) => (
-        <button
-          class="filter-button"
-          type="button"
-          data-filter={filter}
-          aria-pressed={filter === "Alles" ? "true" : "false"}
-        >
-          {filter}
-        </button>
+{showcase ? (
+  <div class="portfolio-showcase" aria-label="Portfolio per categorie">
+    {groupedItems.map(({ category, items: categoryItems }, categoryIndex) => (
+      <a
+        class={`portfolio-showcase-card portfolio-showcase-card-${categoryIndex + 1}`}
+        href={`/portfolio/?category=${encodeURIComponent(category)}#portfolio-detail`}
+        aria-label={`Bekijk portfolio ${category}`}
+      >
+        <span class="portfolio-showcase-media" data-crossfade>
+          {categoryItems.length ? categoryItems.map((item, imageIndex) => (
+            <img
+              class={imageIndex === 0 ? "is-active" : undefined}
+              src={item.image}
+              alt={imageIndex === 0 ? item.alt : ""}
+              aria-hidden={imageIndex === 0 ? undefined : "true"}
+              loading={categoryIndex < 2 && imageIndex === 0 ? "eager" : "lazy"}
+            />
+          )) : <span class="portfolio-showcase-empty">Binnenkort meer beelden</span>}
+        </span>
+        <span class="portfolio-showcase-copy">
+          <span class="eyebrow">0{categoryIndex + 1}</span>
+          <strong>{category}</strong>
+          <small>{categoryDescriptions[category]}</small>
+          <span class="text-link">Bekijk categorie <span aria-hidden="true">↗</span></span>
+        </span>
+      </a>
+    ))}
+  </div>
+) : (
+  <>
+    {interactive && (
+      <div class="filter-bar" aria-label="Portfoliofilters">
+        {filters.map((filter) => {
+          const isActive = filter === "Alles" ? !selectedCategory : filter === selectedCategory;
+          const href = filter === "Alles" ? "/portfolio/#portfolio-detail" : `/portfolio/?category=${encodeURIComponent(filter)}#portfolio-detail`;
+          return (
+            <a class="filter-button" href={href} aria-current={isActive ? "page" : undefined}>
+              {filter}
+            </a>
+          );
+        })}
+      </div>
+    )}
+
+    <div class="portfolio-detail-list" id="portfolio-detail">
+      {selectedItem && (
+        <a class="text-link portfolio-back-link" href={`/portfolio/?category=${encodeURIComponent(selectedItem.category)}#portfolio-detail`}>
+          ← Terug naar {selectedItem.category}
+        </a>
+      )}
+      {visibleItems.map((item, index) => (
+        <article class={`portfolio-detail-card portfolio-detail-card-${(index % 3) + 1}`}>
+          {selectedItem ? (
+            <div class="portfolio-detail-image">
+              <img src={item.image} alt={item.alt} loading="eager" />
+            </div>
+          ) : (
+            <a
+              class="portfolio-detail-image"
+              href={`/portfolio/?category=${encodeURIComponent(item.category)}&photo=${encodeURIComponent(item.title)}#portfolio-detail`}
+              aria-label={`Open foto ${item.title}`}
+            >
+              <img src={item.image} alt={item.alt} loading={index < 2 ? "eager" : "lazy"} />
+            </a>
+          )}
+          <div class="portfolio-detail-copy">
+            <p class="eyebrow">{item.category}</p>
+            <h2>{item.title}</h2>
+            <p>{item.description}</p>
+            <p class="portfolio-detail-note">{item.note}</p>
+            <a class="text-link" href="/contact/">Plan een shoot <span aria-hidden="true">↗</span></a>
+          </div>
+        </article>
       ))}
     </div>
-  )
-}
+  </>
+)}
 
-<div class="portfolio-board" data-portfolio-board>
-  {
-    items.map((item, index) => (
-      <article class={`photo-card photo-card-${(index % 6) + 1}`} data-category={item.category}>
-        <a href="/contact/" aria-label={`${item.title}: shoot aanvragen`}>
-          <img src={item.image} alt={item.alt} loading={index < 2 ? "eager" : "lazy"} />
-          <span
-            class="photo-title-cutout"
-            style={`--item-image: url("${item.image}")`}
-            aria-hidden="true"
-          >{item.title}</span>
-          <span class="photo-label">
-            <strong>{item.title}</strong>
-            <small>{item.category} / {item.note}</small>
-          </span>
-        </a>
-      </article>
-    ))
-  }
-</div>
+{showcase && (
+  <script>
+    const crossfadeCards = document.querySelectorAll<HTMLElement>("[data-crossfade]");
 
-{
-  interactive && (
-    <script>
-      const board = document.querySelector("[data-portfolio-board]");
-      const buttons = document.querySelectorAll("[data-filter]");
+    crossfadeCards.forEach((card) => {
+      const images = Array.from(card.querySelectorAll<HTMLImageElement>("img"));
+      if (images.length < 2) return;
 
-      buttons.forEach((button) => {
-        button.addEventListener("click", () => {
-          const filter = button.getAttribute("data-filter");
-          buttons.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
-          board?.querySelectorAll("[data-category]").forEach((card) => {
-            const shouldShow = filter === "Alles" || card.getAttribute("data-category") === filter;
-            card.toggleAttribute("hidden", !shouldShow);
-          });
-        });
-      });
-    </script>
-  )
-}
+      let activeIndex = 0;
+      window.setInterval(() => {
+        images[activeIndex].classList.remove("is-active");
+        activeIndex = (activeIndex + 1) % images.length;
+        images[activeIndex].classList.add("is-active");
+      }, 4600);
+    });
+  </script>
+)}
