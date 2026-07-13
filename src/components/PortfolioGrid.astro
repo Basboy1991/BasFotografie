@@ -77,8 +77,8 @@ const visibleItems = selectedItem ? [selectedItem] : filteredItems;
 
     <div class="portfolio-detail-list" id="portfolio-detail">
       {selectedItem && (
-        <a class="text-link portfolio-back-link" href={`/portfolio/?category=${encodeURIComponent(selectedItem.category)}#portfolio-detail`}>
-          ← Terug naar {selectedItem.category}
+        <a class="text-link portfolio-back-link" href="/portfolio/#portfolio-detail">
+          ← Terug naar alle foto's
         </a>
       )}
       {visibleItems.map((item, index) => (
