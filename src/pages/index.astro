@@ -17,88 +17,82 @@ const processSteps = await getProcessSteps();
   <section class="hero">
     <div class="hero-copy">
       <p class="eyebrow">{site.heroEyebrow}</p>
-      <h1>
-        <span>Geen stijve poses.</span>
-        <em>Wel een foto die klopt.</em>
-      </h1>
-      <p class="hero-lead">
-        {site.heroBody} Je hoeft niets te kunnen voor mijn camera; ik help waar dat nodig is.
-      </p>
+      <h1>{site.tagline}</h1>
+      <p>{site.heroBody}</p>
       <div class="hero-actions">
-        <a class="button" href="/portfolio/">Bekijk mijn werk</a>
-        <a class="text-link" href="/contact/">Stuur me je idee <span aria-hidden="true">↗</span></a>
+        <a class="button" href="/contact/">Plan een shoot</a>
+        <a class="button button-secondary" href="/portfolio/">Bekijk portfolio</a>
       </div>
-      <p class="availability"><span aria-hidden="true"></span> Op locatie in Naaldwijk en de rest van het Westland</p>
     </div>
-
-    <figure class="hero-frame">
-      <div class="focus-frame">
-        <img src="/assets/portfolio/kinderen-01.webp" alt="Beeldmarkering voor een toekomstige foto uit het portfolio van Bas" />
-      </div>
-      <figcaption>
-        <span>kinderen · gezinnen · huisdieren · portretten</span>
-        <span>Naaldwijk / Westland</span>
-      </figcaption>
-    </figure>
+    <div class="hero-table" aria-label="Selectietafel met portfolio placeholders">
+      <figure class="hero-photo hero-photo-main">
+        <img src="/assets/portfolio/kinderen-01.webp" alt="Privacy-veilige placeholder voor kinderportret" />
+        <figcaption>Kinderen</figcaption>
+      </figure>
+      <figure class="hero-photo hero-photo-side">
+        <img src="/assets/portfolio/huisdieren-01.webp" alt="Privacy-veilige placeholder voor huisdierportret" />
+        <figcaption>Huisdieren</figcaption>
+      </figure>
+      <figure class="hero-photo hero-photo-small">
+        <img src="/assets/portfolio/portretten-01.webp" alt="Privacy-veilige placeholder voor portret" />
+        <figcaption>Portretten</figcaption>
+      </figure>
+    </div>
   </section>
 
   <section class="split-section">
     <SectionIntro
-      eyebrow="Zo fotografeer ik"
-      title="Je hoeft niets te kunnen voor mijn camera."
-      body="Een shoot mag richting hebben, maar hoeft geen toneelstuk te worden. Ik kijk, wacht en stuur alleen bij wanneer dat helpt."
+      eyebrow="Waarom Bas"
+      title="Portretten zonder toneelstuk"
+      body="De stijl is rustig, helder en persoonlijk: wel mooi gecomponeerd, zonder dat iedereen strak hoeft te poseren."
     />
     <div class="feature-list">
       <article>
-        <p class="feature-label">De plek</p>
-        <h3>Waar jullie al op je gemak zijn</h3>
-        <p>Thuis, in het park, aan het strand of ergens anders in het Westland.</p>
+        <h3>Op locatie</h3>
+        <p>In Naaldwijk, het Westland of een plek die voor jullie logisch voelt.</p>
       </article>
       <article>
-        <p class="feature-label">Tijdens de shoot</p>
-        <h3>Richting als het helpt</h3>
-        <p>Geen harde poses. Wel rustige aanwijzingen en ruimte om te bewegen.</p>
+        <h3>Voor kinderen, gezinnen en dieren</h3>
+        <p>Met ruimte voor beweging, pauzes en kleine momenten tussendoor.</p>
       </article>
       <article>
-        <p class="feature-label">Na afloop</p>
-        <h3>Alleen de beelden die kloppen</h3>
-        <p>Je ontvangt een zorgvuldige selectie bewerkte foto's in een online galerij.</p>
+        <h3>Digitale galerij</h3>
+        <p>Je ontvangt een verzorgde selectie bewerkte foto's in een online galerij.</p>
       </article>
     </div>
   </section>
 
   <section class="section">
     <SectionIntro
-      eyebrow="Mijn werk"
-      title="Niet het poseren. Juist wat er tussendoor gebeurt."
-      body="Kinderen, gezinnen, dieren en portretten — buiten of op een plek die vertrouwd voelt."
+      eyebrow="Selectietafel"
+      title="Een eerste indruk van de beeldrichting"
+      body="De huidige beelden zijn bewust privacy-veilige placeholders. Voor livegang komt hier alleen een goedgekeurde fotoset."
     />
     <PortfolioGrid limit={8} />
     <div class="center-action">
-      <a class="text-link" href="/portfolio/">Bekijk het hele portfolio <span aria-hidden="true">→</span></a>
+      <a class="button button-secondary" href="/portfolio/">Bekijk alle categorieën</a>
     </div>
   </section>
 
   <section class="section section-muted">
     <SectionIntro
-      eyebrow="Tijd & tarieven"
-      title="Kies hoeveel ruimte bij jullie past."
-      body="Een half uur voor een korte serie, of meer tijd om rustig verschillende momenten te maken."
+      eyebrow="Pakketten"
+      title="Duidelijke keuzes voor jouw shoot"
+      body="Kies klein en gericht, of neem meer tijd voor een complete serie."
     />
     <PackageCards />
   </section>
 
   <section class="section">
     <SectionIntro
-      eyebrow="Van bericht tot beeld"
-      title="Helder geregeld, zonder boekingsstraat."
-      body="Je hebt steeds rechtstreeks contact met mij. Zo weten we allebei wat we kunnen verwachten."
+      eyebrow="Werkwijze"
+      title="Van aanvraag naar galerij"
+      body="Een shoot moet overzichtelijk voelen, ook als kinderen of dieren hun eigen tempo hebben."
     />
     <div class="process-grid">
       {
-        processSteps.map((step, index) => (
+        processSteps.map((step) => (
           <article>
-            <span class="step-number">{String(index + 1).padStart(2, "0")}</span>
             <h3>{step.title}</h3>
             <p>{step.body}</p>
           </article>

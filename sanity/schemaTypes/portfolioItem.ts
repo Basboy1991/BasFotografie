@@ -40,6 +40,19 @@ export const portfolioItemType = defineType({
       initialValue: "Goedgekeurde foto",
     }),
     defineField({
+      name: "layoutSize",
+      title: "Layoutgrootte",
+      type: "string",
+      options: {
+        list: [
+          { title: "Standaard", value: "standaard" },
+          { title: "Groot / uitgelicht", value: "groot" },
+        ],
+        layout: "radio",
+      },
+      initialValue: "standaard",
+    }),
+    defineField({
       name: "published",
       title: "Publiceren",
       type: "boolean",

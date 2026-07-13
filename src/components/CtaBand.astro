@@ -7,20 +7,20 @@ interface Props {
 }
 
 const {
-  title = "Heb je iets in gedachten?",
-  body = "Vertel me wie je wilt laten fotograferen en welke plek goed voelt. Je krijgt gewoon antwoord van mij.",
+  title = "Klaar om een shoot te plannen?",
+  body = "Vertel kort wie je wilt laten fotograferen en welke plek je in gedachten hebt. Bas reageert persoonlijk.",
 } = Astro.props;
 const site = await getSiteSettings();
 ---
 
 <section class="cta-band" aria-labelledby="cta-title">
   <div>
-    <p class="eyebrow">Rechtstreeks naar Bas</p>
+    <p class="eyebrow">Aanvraag</p>
     <h2 id="cta-title">{title}</h2>
     <p>{body}</p>
   </div>
   <div class="cta-actions">
-    <a class="button" href="/contact/">Stuur me je idee</a>
-    <a class="text-link text-link-light" href={site.whatsappHref}>App me <span aria-hidden="true">↗</span></a>
+    <a class="button" href="/contact/">Aanvraag doen</a>
+    <a class="button button-quiet" href={site.whatsappHref}>WhatsApp Bas</a>
   </div>
 </section>

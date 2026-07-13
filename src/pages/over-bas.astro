@@ -5,7 +5,6 @@ import CtaBand from "@/components/CtaBand.astro";
 import { getSiteSettings } from "@/data/site";
 
 const site = await getSiteSettings();
-const hasProfilePhoto = site.profileImage !== "/assets/portfolio/portretten-01.webp";
 ---
 
 <Layout
@@ -16,48 +15,36 @@ const hasProfilePhoto = site.profileImage !== "/assets/portfolio/portretten-01.w
   <section class="about-hero">
     <div>
       <p class="eyebrow">Over Bas</p>
-      <h1>Ik kijk liever dan dat ik laat poseren.</h1>
+      <h1>Een rustige blik achter de camera</h1>
       <p>{site.profileIntro}</p>
     </div>
     <figure>
-      {
-        hasProfilePhoto ? (
-          <img src={site.profileImage} alt={`Portret van ${site.person}`} />
-        ) : (
-          <div class="bas-portrait-card" aria-label="Bas van der Scheer, fotograaf in het Westland">
-            <span>bas.</span>
-            <small>achter de camera<br />in het Westland</small>
-          </div>
-        )
-      }
-      <figcaption>{hasProfilePhoto ? site.profileImageCaption : `${site.person} · Naaldwijk`}</figcaption>
+      <img src={site.profileImage} alt={`Portret van ${site.person}`} />
+      <figcaption>{site.profileImageCaption}</figcaption>
     </figure>
   </section>
 
   <section class="split-section">
     <SectionIntro
-      eyebrow="Mijn manier van werken"
-      title="Ik geef richting en wacht daarna op wat er gebeurt."
+      eyebrow="Manier van werken"
+      title="Mooi portret, zonder harde pose"
       body={site.profileBody}
     />
     <div class="feature-list">
       <article>
-        <p class="feature-label">Vertrouwen</p>
-        <h3>Jullie bepalen wat online komt</h3>
-        <p>Beelden van kinderen en gezinnen publiceer ik alleen wanneer ze expliciet zijn goedgekeurd.</p>
+        <h3>Voorzichtig met privacy</h3>
+        <p>Beelden van kinderen en gezinnen komen alleen online wanneer ze expliciet zijn goedgekeurd.</p>
       </article>
       <article>
-        <p class="feature-label">Dichtbij</p>
-        <h3>Thuis in het Westland</h3>
-        <p>Ik fotografeer in Naaldwijk en op plekken in de buurt waar jullie je prettig voelen.</p>
+        <h3>Lokaal in het Westland</h3>
+        <p>Bekend met Naaldwijk en omliggende plekken waar licht, rust en ruimte samenkomen.</p>
       </article>
       <article>
-        <p class="feature-label">Contact</p>
-        <h3>Je spreekt altijd met mij</h3>
-        <p>Geen anonieme boekingsstraat; je hebt rechtstreeks contact via formulier, mail of WhatsApp.</p>
+        <h3>Persoonlijk contact</h3>
+        <p>Geen anonieme boekingsstraat, maar direct contact via formulier, mail of WhatsApp.</p>
       </article>
     </div>
   </section>
 
-  <CtaBand title="Zullen we kennismaken?" body="Stuur me je idee, ook als je nog twijfelt over pakket, locatie of timing." />
+  <CtaBand title={`Neem contact op met ${site.person}`} body="Stuur je idee door, ook als je nog twijfelt over pakket, locatie of timing." />
 </Layout>

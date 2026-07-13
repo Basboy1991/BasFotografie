@@ -35,6 +35,7 @@ export type PortfolioItem = {
   image: string;
   alt: string;
   note: string;
+  layoutSize?: "standaard" | "groot";
 };
 
 export type ProcessStep = {
@@ -50,7 +51,7 @@ export type FaqItem = {
 export const fallbackSite: SiteSettings = withComputedContact({
   name: "Bas Fotografie",
   person: "Bas van der Scheer",
-  tagline: "Geen stijve poses. Wel een foto die klopt.",
+  tagline: "Echte momenten puur vastgelegd",
   description:
     "Fotograaf in Naaldwijk en gemeente Westland voor kinderen, gezinnen, huisdieren en portretten op locatie.",
   email: "basvanderscheer@gmail.com",
@@ -61,30 +62,32 @@ export const fallbackSite: SiteSettings = withComputedContact({
   instagram:
     "https://www.instagram.com/basvdscheer_fotografie?igsh=c2l0ZWh5Mnh1OXoy",
   region: "Naaldwijk en gemeente Westland",
-  heroEyebrow: "Bas van der Scheer · fotograaf in het Westland",
+  heroEyebrow: "Fotograaf in Naaldwijk en gemeente Westland",
   heroBody:
-    "Ik fotografeer kinderen, gezinnen, huisdieren en portretten op een plek waar jullie je prettig voelen.",
+    "Mooie portretten van kinderen, gezinnen en huisdieren, gemaakt op een plek waar jullie je prettig voelen.",
   profileIntro:
-    "Ik ben Bas van der Scheer. Ik fotografeer kinderen, gezinnen, huisdieren en portretten met aandacht voor licht, kleine gebaren en het moment waarop iemand even zichzelf is.",
+    "Bas van der Scheer fotografeert kinderen, gezinnen, huisdieren en portretten met aandacht voor licht, kleine gebaren en het moment dat iemand even zichzelf is.",
   profileBody:
-    "Een shoot mag richting hebben, maar hoeft geen toneelstuk te worden. Ik geef rustige aanwijzingen en let vooral op de momenten ertussen.",
+    "De shoot mag richting hebben, maar hoeft geen toneelstuk te worden. Bas geeft rustige aanwijzingen en let op de momenten ertussen.",
   profileImage: "/assets/portfolio/portretten-01.webp",
-  profileImageCaption: "Bas van der Scheer · Naaldwijk",
+  profileImageCaption: "Portretplaceholder tot een goedgekeurde foto is gekozen.",
 });
 
 export const site = fallbackSite;
 
 export const navItems = [
-  { label: "Mijn werk", href: "/portfolio/" },
-  { label: "Tarieven", href: "/pakketten/" },
+  { label: "Home", href: "/" },
+  { label: "Portfolio", href: "/portfolio/" },
+  { label: "Pakketten", href: "/pakketten/" },
   { label: "Werkwijze", href: "/werkwijze/" },
-  { label: "Over mij", href: "/over-bas/" },
+  { label: "Over Bas", href: "/over-bas/" },
+  { label: "FAQ", href: "/faq/" },
   { label: "Contact", href: "/contact/" },
 ];
 
 export const fallbackPackages: PackageItem[] = [
   {
-    name: "Kort",
+    name: "Basic",
     price: "\u20ac125",
     duration: "30 minuten",
     summary: "Een korte, rustige shoot voor een kleine selectie portretten.",
@@ -96,7 +99,7 @@ export const fallbackPackages: PackageItem[] = [
     ],
   },
   {
-    name: "Ruim",
+    name: "Extra",
     price: "\u20ac195",
     duration: "60 minuten",
     summary: "Meer tijd voor variatie, ontspanning en meerdere combinaties.",
@@ -109,7 +112,7 @@ export const fallbackPackages: PackageItem[] = [
     featured: true,
   },
   {
-    name: "Serie",
+    name: "Premium",
     price: "\u20ac295",
     duration: "90 minuten",
     summary: "Alle rust voor een complete serie met meerdere momenten.",
@@ -127,85 +130,93 @@ export const fallbackPortfolioItems: PortfolioItem[] = [
     title: "Kinderen buiten",
     category: "Kinderen",
     image: "/assets/portfolio/kinderen-01.webp",
-    alt: "Abstracte beeldmarkering voor kinderfotografie in het Westland",
-    note: "Kinderen",
+    alt: "Placeholder voor kinderportret op locatie in het Westland",
+    note: "Goedgekeurde foto volgt",
+    layoutSize: "groot",
   },
   {
     title: "Kleine blik",
     category: "Kinderen",
     image: "/assets/portfolio/kinderen-02.webp",
-    alt: "Abstracte beeldmarkering voor een rustig kinderportret",
-    note: "Kinderen",
+    alt: "Placeholder voor rustig kinderportret",
+    note: "Privacy-veilige placeholder",
+    layoutSize: "standaard",
   },
   {
     title: "Gezin op locatie",
     category: "Gezinnen",
     image: "/assets/portfolio/gezinnen-01.webp",
-    alt: "Abstracte beeldmarkering voor gezinsfotografie in Naaldwijk",
-    note: "Gezinnen",
+    alt: "Placeholder voor gezinsfotografie in Naaldwijk",
+    note: "Goedgekeurde foto volgt",
+    layoutSize: "groot",
   },
   {
     title: "Samen dichtbij",
     category: "Gezinnen",
     image: "/assets/portfolio/gezinnen-02.webp",
-    alt: "Abstracte beeldmarkering voor een gezinsportret op locatie",
-    note: "Gezinnen",
+    alt: "Placeholder voor gezinsportret op locatie",
+    note: "Privacy-veilige placeholder",
+    layoutSize: "standaard",
   },
   {
     title: "Huisdierportret",
     category: "Huisdieren",
     image: "/assets/portfolio/huisdieren-01.webp",
-    alt: "Abstracte beeldmarkering voor huisdierfotografie",
-    note: "Huisdieren",
+    alt: "Placeholder voor huisdierfotografie",
+    note: "Goedgekeurde foto volgt",
+    layoutSize: "standaard",
   },
   {
     title: "Vacht en blik",
     category: "Huisdieren",
     image: "/assets/portfolio/huisdieren-02.webp",
-    alt: "Abstracte beeldmarkering voor een huisdierportret",
-    note: "Huisdieren",
+    alt: "Placeholder voor detailrijk huisdierportret",
+    note: "Privacy-veilige placeholder",
+    layoutSize: "groot",
   },
   {
     title: "Portretlicht",
     category: "Portretten",
     image: "/assets/portfolio/portretten-01.webp",
-    alt: "Abstracte beeldmarkering voor portretfotografie met helder licht",
-    note: "Portretten",
+    alt: "Placeholder voor portretfotografie met helder licht",
+    note: "Goedgekeurde foto volgt",
+    layoutSize: "groot",
   },
   {
     title: "Zacht profiel",
     category: "Portretten",
     image: "/assets/portfolio/portretten-02.webp",
-    alt: "Abstracte beeldmarkering voor een persoonlijk portret",
-    note: "Portretten",
+    alt: "Placeholder voor persoonlijk portret",
+    note: "Privacy-veilige placeholder",
+    layoutSize: "standaard",
   },
   {
     title: "Detail onderweg",
     category: "Kinderen",
     image: "/assets/portfolio/kinderen-03.webp",
-    alt: "Abstracte beeldmarkering voor een spontaan kinderdetail",
-    note: "Kinderen",
+    alt: "Placeholder voor spontaan kinderdetail",
+    note: "Goedgekeurde foto volgt",
   },
   {
     title: "Rustige serie",
     category: "Gezinnen",
     image: "/assets/portfolio/gezinnen-03.webp",
-    alt: "Abstracte beeldmarkering voor een gezinsserie",
-    note: "Gezinnen",
+    alt: "Placeholder voor gezinsserie",
+    note: "Privacy-veilige placeholder",
   },
   {
     title: "Op ooghoogte",
     category: "Huisdieren",
     image: "/assets/portfolio/huisdieren-03.webp",
-    alt: "Abstracte beeldmarkering voor een huisdier op ooghoogte",
-    note: "Huisdieren",
+    alt: "Placeholder voor huisdier op ooghoogte",
+    note: "Goedgekeurde foto volgt",
   },
   {
     title: "Natuurlijk portret",
     category: "Portretten",
     image: "/assets/portfolio/portretten-03.webp",
-    alt: "Abstracte beeldmarkering voor een natuurlijk portret op locatie",
-    note: "Portretten",
+    alt: "Placeholder voor natuurlijk portret op locatie",
+    note: "Privacy-veilige placeholder",
   },
 ];
 
@@ -216,11 +227,11 @@ export const fallbackProcessSteps: ProcessStep[] = [
   },
   {
     title: "Afstemmen",
-    body: "Ik denk mee over timing, locatie en de kleine dingen die de shoot ontspannen maken.",
+    body: "Bas denkt mee over timing, locatie en kleine praktische dingen die de shoot ontspannen maken.",
   },
   {
     title: "Fotograferen",
-    body: "Ik geef rustige aanwijzingen en laat het los zodra het moment er is.",
+    body: "De shoot draait om mooi licht, rustige aanwijzingen en ruimte voor echte momenten.",
   },
   {
     title: "Opleveren",
@@ -232,7 +243,7 @@ export const fallbackFaqs: FaqItem[] = [
   {
     question: "Waar fotografeer je?",
     answer:
-      "Ik fotografeer op locatie in Naaldwijk en de gemeente Westland. Buiten Westland kan in overleg.",
+      "Bas fotografeert op locatie in Naaldwijk en de gemeente Westland. Buiten Westland kan in overleg.",
   },
   {
     question: "Moeten kinderen of dieren goed stilzitten?",
@@ -252,12 +263,12 @@ export const fallbackFaqs: FaqItem[] = [
   {
     question: "Wanneer ontvang ik de foto's?",
     answer:
-      "Ik spreek de levertijd vooraf met je af, zodat je weet wanneer je de galerij kunt verwachten.",
+      "De exacte levertijd wordt bij de aanvraag afgestemd. Reken voor v1-communicatie op een persoonlijke afspraak per shoot.",
   },
   {
-    question: "Zijn dit totaalprijzen?",
+    question: "Zijn de prijzen inclusief btw?",
     answer:
-      "De bedragen op de site zijn totaalprijzen. Heb je een zakelijke vraag, stuur me dan even een bericht.",
+      "De site toont totaalprijzen. Een btw-vermelding wordt pas toegevoegd wanneer administratief vaststaat welke vermelding klopt.",
   },
 ];
 
@@ -287,41 +298,10 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   }
 
   const profileImage = imageUrlFor(content.profileImage, { width: 1200, height: 1500 });
-  const merged = {
+  return withComputedContact({
     ...fallbackSite,
     ...content,
     profileImage: profileImage ?? fallbackSite.profileImage,
-  };
-
-  return withComputedContact({
-    ...merged,
-    tagline:
-      merged.tagline === "Echte momenten puur vastgelegd"
-        ? fallbackSite.tagline
-        : merged.tagline,
-    heroEyebrow:
-      merged.heroEyebrow === "Fotograaf in Naaldwijk en gemeente Westland"
-        ? fallbackSite.heroEyebrow
-        : merged.heroEyebrow,
-    heroBody:
-      merged.heroBody ===
-      "Mooie portretten van kinderen, gezinnen en huisdieren, gemaakt op een plek waar jullie je prettig voelen."
-        ? fallbackSite.heroBody
-        : merged.heroBody,
-    profileIntro:
-      merged.profileIntro ===
-      "Bas van der Scheer fotografeert kinderen, gezinnen, huisdieren en portretten met aandacht voor licht, kleine gebaren en het moment dat iemand even zichzelf is."
-        ? fallbackSite.profileIntro
-        : merged.profileIntro,
-    profileBody:
-      merged.profileBody ===
-      "De shoot mag richting hebben, maar hoeft geen toneelstuk te worden. Bas geeft rustige aanwijzingen en let op de momenten ertussen."
-        ? fallbackSite.profileBody
-        : merged.profileBody,
-    profileImageCaption:
-      merged.profileImageCaption === "Portretplaceholder tot een goedgekeurde foto is gekozen."
-        ? fallbackSite.profileImageCaption
-        : merged.profileImageCaption,
   });
 }
 
@@ -337,20 +317,7 @@ export async function getPackages(): Promise<PackageItem[]> {
     }`,
   );
 
-  if (!content?.length) {
-    return fallbackPackages;
-  }
-
-  const legacyNames: Record<string, string> = {
-    Basic: "Kort",
-    Extra: "Ruim",
-    Premium: "Serie",
-  };
-
-  return content.map((item) => ({
-    ...item,
-    name: legacyNames[item.name] ?? item.name,
-  }));
+  return content?.length ? content : fallbackPackages;
 }
 
 export async function getPortfolioItems(): Promise<PortfolioItem[]> {
@@ -360,7 +327,8 @@ export async function getPortfolioItems(): Promise<PortfolioItem[]> {
       category,
       image,
       alt,
-      note
+      note,
+      layoutSize
     }`,
   );
 
@@ -386,25 +354,7 @@ export async function getProcessSteps(): Promise<ProcessStep[]> {
     }`,
   );
 
-  if (!content?.length) {
-    return fallbackProcessSteps;
-  }
-
-  const legacyBodies = new Map([
-    [
-      "Bas denkt mee over timing, locatie en kleine praktische dingen die de shoot ontspannen maken.",
-      "Ik denk mee over timing, locatie en de kleine dingen die de shoot ontspannen maken.",
-    ],
-    [
-      "De shoot draait om mooi licht, rustige aanwijzingen en ruimte voor echte momenten.",
-      "Ik geef rustige aanwijzingen en laat het los zodra het moment er is.",
-    ],
-  ]);
-
-  return content.map((step) => ({
-    ...step,
-    body: legacyBodies.get(step.body) ?? step.body,
-  }));
+  return content?.length ? content : fallbackProcessSteps;
 }
 
 export async function getFaqs(): Promise<FaqItem[]> {
@@ -415,30 +365,7 @@ export async function getFaqs(): Promise<FaqItem[]> {
     }`,
   );
 
-  if (!content?.length) {
-    return fallbackFaqs;
-  }
-
-  const legacyAnswers = new Map([
-    [
-      "Bas fotografeert op locatie in Naaldwijk en de gemeente Westland. Buiten Westland kan in overleg.",
-      "Ik fotografeer op locatie in Naaldwijk en de gemeente Westland. Buiten Westland kan in overleg.",
-    ],
-    [
-      "De exacte levertijd wordt bij de aanvraag afgestemd. Reken voor v1-communicatie op een persoonlijke afspraak per shoot.",
-      "Ik spreek de levertijd vooraf met je af, zodat je weet wanneer je de galerij kunt verwachten.",
-    ],
-    [
-      "De site toont totaalprijzen. Een btw-vermelding wordt pas toegevoegd wanneer administratief vaststaat welke vermelding klopt.",
-      "De bedragen op de site zijn totaalprijzen. Heb je een zakelijke vraag, stuur me dan even een bericht.",
-    ],
-  ]);
-
-  return content.map((item) => ({
-    ...item,
-    question: item.question === "Zijn de prijzen inclusief btw?" ? "Zijn dit totaalprijzen?" : item.question,
-    answer: legacyAnswers.get(item.answer) ?? item.answer,
-  }));
+  return content?.length ? content : fallbackFaqs;
 }
 
 function withComputedContact<T extends Partial<SiteSettings>>(settings: T): T & SiteSettings {

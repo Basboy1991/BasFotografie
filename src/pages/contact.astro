@@ -15,12 +15,12 @@ const selectedPackage = Astro.url.searchParams.get("pakket") ?? "";
   <section class="contact-hero">
     <div>
       <p class="eyebrow">Contact</p>
-      <h1>Vertel me wat je wilt vastleggen</h1>
+      <h1>Vertel wat je wilt vastleggen</h1>
       <p>
-        Vul in wat je al weet. Liever eerst iets vragen? Stuur me gewoon een WhatsApp-bericht.
+        Gebruik het formulier voor een aanvraag. Liever eerst snel iets vragen? Stuur Bas een WhatsApp-bericht.
       </p>
       <div class="contact-links">
-        <a href={site.whatsappHref}>App mij op {site.phoneDisplay}</a>
+        <a href={site.whatsappHref}>WhatsApp {site.phoneDisplay}</a>
         <a href={`mailto:${site.email}`}>{site.email}</a>
         <a href={site.instagram} rel="noreferrer">Instagram</a>
       </div>
@@ -95,8 +95,8 @@ const selectedPackage = Astro.url.searchParams.get("pakket") ?? "";
         <input name="privacy" type="checkbox" required />
         <span>Ik ga akkoord met de verwerking van mijn gegevens voor deze aanvraag en heb de <a href="/privacy/">privacyverklaring</a> gelezen.</span>
       </label>
-      <button class="button" type="submit">Stuur naar Bas</button>
-      <p class="form-note">Ik neem daarna persoonlijk contact met je op.</p>
+      <button class="button" type="submit">Aanvraag versturen</button>
+      <p class="form-note">Na verzending neemt Bas persoonlijk contact met je op.</p>
     </form>
   </section>
 </Layout>
