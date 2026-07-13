@@ -3,6 +3,7 @@ dist/
 .astro/
 .sanity/
 .vercel-cli/
+.vercel/
 .env
 .env.*
 !.env.example
