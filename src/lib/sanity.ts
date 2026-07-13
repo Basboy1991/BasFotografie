@@ -2,7 +2,9 @@ import { createClient } from "@sanity/client";
 import { createImageUrlBuilder } from "@sanity/image-url";
 
 const projectId =
-  import.meta.env.PUBLIC_SANITY_PROJECT_ID || import.meta.env.SANITY_STUDIO_PROJECT_ID;
+  import.meta.env.PUBLIC_SANITY_PROJECT_ID ||
+  import.meta.env.SANITY_STUDIO_PROJECT_ID ||
+  "k2m6gkis";
 const dataset =
   import.meta.env.PUBLIC_SANITY_DATASET || import.meta.env.SANITY_STUDIO_DATASET || "production";
 const apiVersion = import.meta.env.PUBLIC_SANITY_API_VERSION || "2026-07-07";
@@ -15,7 +17,7 @@ export const sanityClient = sanityEnabled
       projectId,
       dataset,
       apiVersion,
-      useCdn: true,
+      useCdn: false,
     })
   : null;
 

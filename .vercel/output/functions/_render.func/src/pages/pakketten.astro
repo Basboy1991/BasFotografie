@@ -1,0 +1,51 @@
+---
+import Layout from "@/components/Layout.astro";
+import PackageCards from "@/components/PackageCards.astro";
+import SectionIntro from "@/components/SectionIntro.astro";
+import CtaBand from "@/components/CtaBand.astro";
+---
+
+<Layout
+  title="Pakketten en prijzen"
+  description="Pakketten en prijzen voor kinderfotografie, gezinsfotografie, huisdierfotografie en portretten door Bas Fotografie in Westland."
+  currentPath="/pakketten/"
+>
+  <section class="page-hero compact">
+    <p class="eyebrow">Pakketten</p>
+    <h1>Basic, Extra en Premium</h1>
+    <p>
+      Drie duidelijke totaalprijzen voor particuliere shoots op locatie. Buiten de gemeente Westland kan in overleg.
+    </p>
+  </section>
+
+  <section class="section">
+    <PackageCards />
+    <p class="fineprint">
+      De bedragen zijn totaalprijzen. Een btw-vermelding wordt toegevoegd wanneer administratief vaststaat welke vermelding klopt.
+    </p>
+  </section>
+
+  <section class="split-section">
+    <SectionIntro
+      eyebrow="Wat past?"
+      title="Kies op rust, niet alleen op aantal foto's"
+      body="Bij kinderen en dieren is extra tijd vaak geen luxe, maar de ruimte waarin de mooiste blik vanzelf ontstaat."
+    />
+    <div class="feature-list">
+      <article>
+        <h3>Basic</h3>
+        <p>Fijn voor een korte portretupdate of een enkel moment.</p>
+      </article>
+      <article>
+        <h3>Extra</h3>
+        <p>De beste balans voor de meeste gezinnen, kinderen en huisdieren.</p>
+      </article>
+      <article>
+        <h3>Premium</h3>
+        <p>Meer rust voor meerdere combinaties, locaties of een grotere serie.</p>
+      </article>
+    </div>
+  </section>
+
+  <CtaBand title="Weet je al welk pakket past?" body="Geef je voorkeur door in het formulier. Twijfel je nog, dan denkt Bas mee." />
+</Layout>
