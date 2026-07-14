@@ -1,6 +1,7 @@
 import { defineCliConfig } from "sanity/cli";
 
 export default defineCliConfig({
+  studioHost: "bas-fotografie-cms",
   api: {
     projectId:
       process.env.SANITY_STUDIO_PROJECT_ID ||
