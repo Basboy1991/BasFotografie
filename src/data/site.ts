@@ -31,7 +31,7 @@ export type PackageItem = {
 
 export type PortfolioItem = {
   title: string;
-  category: "Kinderen" | "Gezinnen" | "Huisdieren" | "Portretten";
+  category: "Kinderen" | "Gezinnen" | "Huisdieren" | "Portretten" | "Privearchief";
   image: string;
   alt: string;
   note: string;

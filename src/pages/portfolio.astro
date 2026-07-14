@@ -5,8 +5,7 @@ import SectionIntro from "@/components/SectionIntro.astro";
 import CtaBand from "@/components/CtaBand.astro";
 
 const requestedCategory = Astro.url.searchParams.get("category") ?? undefined;
-const selectedPhoto = Astro.url.searchParams.get("photo") ?? undefined;
-const selectedCategory = ["Kinderen", "Gezinnen", "Huisdieren", "Portretten"].includes(requestedCategory ?? "")
+const selectedCategory = ["Kinderen", "Gezinnen", "Huisdieren", "Portretten", "Privearchief"].includes(requestedCategory ?? "")
   ? requestedCategory
   : undefined;
 ---
@@ -22,16 +21,16 @@ const selectedCategory = ["Kinderen", "Gezinnen", "Huisdieren", "Portretten"].in
     <p>
       {selectedCategory
         ? "Een rustige serie met beelden die naast elkaar hun eigen verhaal vertellen."
-        : "Blader per categorie door een rustige selectie beelden en open elke foto voor het verhaal ernaast."}
+        : "Open een album, blader door de losse afdrukken en bekijk iedere foto groot met het verhaal ernaast."}
     </p>
   </section>
 
   <section class="section">
     <SectionIntro
-      title={selectedCategory ? `Serie ${selectedCategory.toLowerCase()}` : "Filter op shootsoort"}
-      body="Kies een categorie om de serie te openen."
+      title={selectedCategory ? `Album ${selectedCategory === "Privearchief" ? "privéarchief" : selectedCategory.toLowerCase()}` : "Kies een album"}
+      body={selectedCategory ? "Klik op een foto om deze groot te bekijken." : "Ieder album heeft een eigen ritme, crossfade en verhaal."}
     />
-    <PortfolioGrid interactive selectedCategory={selectedCategory} selectedPhoto={selectedPhoto} />
+    <PortfolioGrid interactive selectedCategory={selectedCategory} />
   </section>
 
   <CtaBand title="Wil je zelf op deze selectietafel komen?" body="Vraag een shoot aan en vertel wat je wilt vastleggen." />

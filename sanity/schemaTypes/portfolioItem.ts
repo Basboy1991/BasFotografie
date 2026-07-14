@@ -16,7 +16,13 @@ export const portfolioItemType = defineType({
       title: "Categorie",
       type: "string",
       options: {
-        list: ["Kinderen", "Gezinnen", "Huisdieren", "Portretten"],
+        list: [
+          "Kinderen",
+          "Gezinnen",
+          "Huisdieren",
+          "Portretten",
+          { title: "Privéarchief", value: "Privearchief" },
+        ],
         layout: "radio",
       },
       validation: (rule) => rule.required(),
