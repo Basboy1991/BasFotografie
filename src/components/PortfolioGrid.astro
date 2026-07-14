@@ -52,6 +52,7 @@ const showAlbums = showcase || (interactive && !selectedCategory);
         class={`portfolio-showcase-card portfolio-showcase-card-${categoryIndex + 1}`}
         href={`/portfolio/?category=${encodeURIComponent(category)}#portfolio-detail`}
         aria-label={`Open album ${category === "Privearchief" ? "privéarchief" : category}`}
+        style={categoryItems[0] ? `--photo-image: url('${categoryItems[0].image}')` : undefined}
       >
         <span class="portfolio-showcase-media" data-crossfade>
           {categoryItems.map((item, imageIndex) => (
@@ -69,6 +70,10 @@ const showAlbums = showcase || (interactive && !selectedCategory);
           <strong>{category === "Privearchief" ? "Privéarchief" : category}</strong>
           <small>{categoryDescriptions[category]}</small>
           <span class="text-link">Album openen <span aria-hidden="true">↗</span></span>
+        </span>
+        <span class="portfolio-hover-copy portfolio-album-hover" aria-hidden="true">
+          <span class="portfolio-hover-cutout">{category === "Privearchief" ? "Privéarchief" : category}</span>
+          <span class="portfolio-hover-title">Album openen</span>
         </span>
       </a>
     ))}
@@ -90,14 +95,9 @@ const showAlbums = showcase || (interactive && !selectedCategory);
             data-title={item.title}
             data-description={item.description}
             data-note={item.note}
-            style={`--photo-image: url('${item.image}')`}
             aria-label={`Bekijk ${item.title} groot`}
           >
             <img src={item.image} alt={item.alt} loading={index < 3 ? "eager" : "lazy"} />
-            <span class="portfolio-hover-copy" aria-hidden="true">
-              <span class="portfolio-hover-cutout">{item.category}</span>
-              <span class="portfolio-hover-title">{item.title}</span>
-            </span>
           </button>
           <p><strong>{item.title}</strong><span>{item.category}</span></p>
         </article>
@@ -120,23 +120,19 @@ const showAlbums = showcase || (interactive && !selectedCategory);
   </>
 )}
 
-{showAlbums && (
-  <script>
-    document.querySelectorAll<HTMLElement>("[data-crossfade]").forEach((card) => {
-      const images = Array.from(card.querySelectorAll<HTMLImageElement>("img"));
-      if (images.length < 2) return;
-      let activeIndex = 0;
-      window.setInterval(() => {
-        images[activeIndex].classList.remove("is-active");
-        activeIndex = (activeIndex + 1) % images.length;
-        images[activeIndex].classList.add("is-active");
-      }, 4600);
-    });
-  </script>
-)}
+<script>
+  document.querySelectorAll<HTMLElement>("[data-crossfade]").forEach((card) => {
+    const images = Array.from(card.querySelectorAll<HTMLImageElement>("img"));
+    if (images.length < 2) return;
+    let activeIndex = 0;
+    window.setInterval(() => {
+      images[activeIndex].classList.remove("is-active");
+      activeIndex = (activeIndex + 1) % images.length;
+      images[activeIndex].classList.add("is-active");
+    }, 4600);
+  });
 
-{interactive && selectedCategory && (
-  <script>
+  {
     const dialog = document.querySelector<HTMLDialogElement>("[data-lightbox]");
     const image = dialog?.querySelector<HTMLImageElement>("[data-lightbox-image]");
     const category = dialog?.querySelector<HTMLElement>("[data-lightbox-category]");
@@ -153,13 +149,20 @@ const showAlbums = showcase || (interactive && !selectedCategory);
         title.textContent = button.dataset.title ?? "";
         description.textContent = button.dataset.description ?? "";
         note.textContent = button.dataset.note ?? "";
-        dialog.showModal();
+        if (typeof dialog.showModal === "function") dialog.showModal();
+        else dialog.setAttribute("open", "");
       });
     });
 
-    dialog?.querySelector("[data-lightbox-close]")?.addEventListener("click", () => dialog.close());
+    const closeDialog = () => {
+      if (!dialog) return;
+      if (typeof dialog.close === "function") dialog.close();
+      else dialog.removeAttribute("open");
+    };
+
+    dialog?.querySelector("[data-lightbox-close]")?.addEventListener("click", closeDialog);
     dialog?.addEventListener("click", (event) => {
-      if (event.target === dialog) dialog.close();
+      if (event.target === dialog) closeDialog();
     });
-  </script>
-)}
+  }
+</script>

@@ -624,6 +624,17 @@ textarea {
   transform: scale(1.07);
 }
 
+.portfolio-showcase-card:hover .portfolio-album-hover,
+.portfolio-showcase-card:focus-visible .portfolio-album-hover {
+  transform: translateY(0);
+}
+
+@media (hover: none) {
+  .portfolio-album-hover {
+    display: none;
+  }
+}
+
 .portfolio-showcase-empty {
   display: grid;
   height: 100%;
@@ -1391,11 +1402,6 @@ textarea {
 .portfolio-album-photo:hover img,
 .portfolio-album-photo:focus-visible img {
   transform: scale(1.06);
-}
-
-.portfolio-album-photo:hover .portfolio-hover-copy,
-.portfolio-album-photo:focus-visible .portfolio-hover-copy {
-  transform: translateY(0);
 }
 
 .portfolio-album-card > p {
