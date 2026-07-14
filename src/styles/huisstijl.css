@@ -656,6 +656,7 @@ textarea {
 }
 
 .portfolio-detail-image {
+  position: relative;
   display: block;
   min-height: 26rem;
   overflow: hidden;
@@ -676,6 +677,58 @@ textarea {
 
 .portfolio-detail-image img {
   transition: transform 500ms ease;
+}
+
+.portfolio-hover-copy {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: grid;
+  min-height: 48%;
+  align-content: end;
+  gap: 0.35rem;
+  padding: clamp(1rem, 3vw, 1.6rem);
+  background: rgba(44, 42, 40, 0.9);
+  color: var(--brand-cream);
+  transform: translateY(calc(100% - 12px));
+  transition: transform 420ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.portfolio-detail-image:hover .portfolio-hover-copy,
+.portfolio-detail-image:focus-visible .portfolio-hover-copy {
+  transform: translateY(0);
+}
+
+.portfolio-hover-cutout {
+  width: 100%;
+  max-width: 100%;
+  background-image: var(--photo-image);
+  background-position: center;
+  background-size: cover;
+  color: var(--brand-cream);
+  font-family: "Trebuchet MS", "Helvetica Neue", Arial, sans-serif;
+  font-size: clamp(2rem, 4vw, 3.8rem);
+  font-weight: 900;
+  line-height: 0.86;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .portfolio-hover-cutout {
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+.portfolio-hover-title {
+  color: rgba(234, 224, 213, 0.84);
+  font-size: 0.9rem;
+  font-weight: 700;
 }
 
 .portfolio-back-link {

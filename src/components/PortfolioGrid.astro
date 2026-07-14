@@ -92,8 +92,13 @@ const visibleItems = selectedItem ? [selectedItem] : filteredItems;
               class="portfolio-detail-image"
               href={`/portfolio/?category=${encodeURIComponent(item.category)}&photo=${encodeURIComponent(item.title)}#portfolio-detail`}
               aria-label={`Open foto ${item.title}`}
+              style={`--photo-image: url('${item.image}')`}
             >
               <img src={item.image} alt={item.alt} loading={index < 2 ? "eager" : "lazy"} />
+              <span class="portfolio-hover-copy" aria-hidden="true">
+                <span class="portfolio-hover-cutout">{item.category}</span>
+                <span class="portfolio-hover-title">{item.title}</span>
+              </span>
             </a>
           )}
           <div class="portfolio-detail-copy">
