@@ -335,7 +335,12 @@ export async function getPackages(): Promise<PackageItem[]> {
 
 export async function getPortfolioItems(): Promise<PortfolioItem[]> {
   const content = await fetchSanity<(Omit<PortfolioItem, "image"> & { image?: unknown })[]>(
-    `*[_type == "portfolioItem" && coalesce(published, true)] | order(order asc, _createdAt asc) {
+    `*[
+      _type == "portfolioItem" &&
+      published == true &&
+      defined(image.asset) &&
+      category in ["Kinderen", "Gezinnen", "Huisdieren", "Portretten", "Privearchief"]
+    ] | order(order asc, _createdAt asc) {
       title,
       category,
       image,
@@ -355,7 +360,7 @@ export async function getPortfolioItems(): Promise<PortfolioItem[]> {
     return {
       ...fallback,
       ...item,
-      image: imageUrlFor(item.image, { width: 1400, height: 1700 }) ?? fallback.image,
+      image: imageUrlFor(item.image, { width: 1800 }) ?? fallback.image,
     };
   });
 }

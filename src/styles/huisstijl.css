@@ -908,6 +908,14 @@ textarea {
   font-weight: 700;
   padding: 0.55rem 0.9rem;
   text-decoration: none;
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+}
+
+.filter-button:hover,
+.filter-button:focus-visible {
+  border-color: var(--brand);
+  background: rgba(192, 92, 67, 0.1);
+  color: var(--brand-dark);
 }
 
 .filter-button[aria-pressed="true"],
@@ -1497,11 +1505,6 @@ textarea {
   line-height: 1;
 }
 
-.filter-button[aria-current="page"] {
-  background: var(--brand-green);
-  border-color: var(--brand-green);
-  color: var(--paper);
-}
 @media (max-width: 980px) {
   .brand-wordmark {
     width: 190px;
