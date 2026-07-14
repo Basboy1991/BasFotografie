@@ -3,7 +3,7 @@ import sitemap from "@astrojs/sitemap";
 import vercel from "@astrojs/vercel";
 
 export default defineConfig({
-  site: "https://bas-fotografie.nl",
+  site: "https://bas-fotografie.vercel.app",
   output: "server",
   adapter: vercel(),
   integrations: [sitemap()],

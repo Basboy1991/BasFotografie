@@ -149,6 +149,17 @@ textarea {
   justify-content: flex-end;
 }
 
+.nav-toggle {
+  display: none;
+  border: 1px solid var(--brand-line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--brand-dark);
+  cursor: pointer;
+  font-weight: 800;
+  padding: 0.55rem 0.9rem;
+}
+
 .nav-links a {
   border-radius: 999px;
   color: var(--brand-muted);
@@ -1063,6 +1074,39 @@ textarea {
   font-weight: 700;
 }
 
+.form-error {
+  margin: 0 0 1rem;
+  border: 1px solid rgba(151, 48, 35, 0.35);
+  border-radius: var(--radius-sm);
+  background: rgba(192, 92, 67, 0.1);
+  color: #74291f;
+  font-weight: 700;
+  padding: 0.85rem 1rem;
+}
+
+.contact-expectations {
+  margin-top: 2rem;
+  padding: 1.15rem 1.25rem;
+  border-left: 3px solid var(--brand);
+  background: rgba(255, 250, 246, 0.6);
+}
+
+.contact-expectations .eyebrow { margin-bottom: 0.45rem; }
+
+.contact-expectations ol {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding-left: 1.2rem;
+  color: var(--brand-muted);
+}
+
+.field-optional {
+  color: var(--brand-muted);
+  font-size: 0.82em;
+  font-weight: 500;
+}
+
 .contact-form {
   display: grid;
   gap: 1rem;
@@ -1234,17 +1278,24 @@ textarea {
     padding: 0.8rem 0;
   }
 
+  .nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .js .nav-links {
+    display: none;
+  }
+
+  .js .nav-links.is-open,
   .nav-links {
     position: static;
-    display: flex;
+    display: grid;
     flex-wrap: wrap;
     flex: 1 0 100%;
     overflow-x: visible;
     padding: 0.2rem 0 0;
-  }
-
-  .nav-links.is-open {
-    display: flex;
   }
 
   .nav-links a {

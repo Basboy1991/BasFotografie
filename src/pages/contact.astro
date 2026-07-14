@@ -5,98 +5,96 @@ import { getPackages, getSiteSettings } from "@/data/site";
 const site = await getSiteSettings();
 const packages = await getPackages();
 const selectedPackage = Astro.url.searchParams.get("pakket") ?? "";
+const formStatus = Astro.url.searchParams.get("status");
 ---
 
 <Layout
   title="Contact en aanvraag"
-  description="Vraag een fotoshoot aan bij Bas Fotografie in Naaldwijk en gemeente Westland via formulier, WhatsApp of e-mail."
+  description="Vraag een fotoshoot bij mij aan in Naaldwijk en gemeente Westland, via formulier, WhatsApp of e-mail."
   currentPath="/contact/"
 >
   <section class="contact-hero">
     <div>
       <p class="eyebrow">Contact</p>
       <h1>Vertel wat je wilt vastleggen</h1>
-      <p>
-        Gebruik het formulier voor een aanvraag. Liever eerst snel iets vragen? Stuur Bas een WhatsApp-bericht.
-      </p>
+      <p>Vertel kort wat je wilt vastleggen. Daarna stem ik persoonlijk datum, locatie en pakket met je af.</p>
       <div class="contact-links">
         <a href={site.whatsappHref}>WhatsApp {site.phoneDisplay}</a>
         <a href={`mailto:${site.email}`}>{site.email}</a>
         <a href={site.instagram} rel="noreferrer">Instagram</a>
       </div>
+      <div class="contact-expectations">
+        <p class="eyebrow">Na je aanvraag</p>
+        <ol>
+          <li>Ik lees je idee en neem persoonlijk contact met je op.</li>
+          <li>Samen stemmen we datum, locatie en pakket af.</li>
+          <li>Ik stuur je heldere praktische informatie voor de shoot.</li>
+        </ol>
+      </div>
     </div>
 
-    <form
-      class="contact-form"
-      name="shoot-aanvraag"
-      method="POST"
-      data-netlify="true"
-      netlify-honeypot="bot-field"
-      action="/bedankt/"
-    >
-      <input type="hidden" name="form-name" value="shoot-aanvraag" />
-      <p class="hidden-field">
-        <label>Laat dit veld leeg <input name="bot-field" /></label>
-      </p>
+    <form class="contact-form" name="shoot-aanvraag" method="POST" action="/api/contact/" data-contact-form>
+      <p class="hidden-field"><label>Laat dit veld leeg <input name="bot-field" /></label></p>
+      {formStatus === "error" && <p class="form-error" role="alert">Je aanvraag kon niet worden verstuurd. Probeer het opnieuw of stuur mij een WhatsApp-bericht.</p>}
+      <p class="form-error" data-contact-error role="alert" hidden>Je aanvraag kon niet worden verstuurd. Probeer het opnieuw of stuur mij een WhatsApp-bericht.</p>
       <div class="form-grid">
-        <label>
-          Naam
-          <input name="naam" type="text" autocomplete="name" required />
-        </label>
-        <label>
-          E-mail
-          <input name="email" type="email" autocomplete="email" required />
-        </label>
-        <label>
-          Telefoon
-          <input name="telefoon" type="tel" autocomplete="tel" required />
-        </label>
-        <label>
-          Shootsoort
+        <label>Naam <input name="naam" type="text" autocomplete="name" required /></label>
+        <label>E-mail <input name="email" type="email" autocomplete="email" required /></label>
+        <label>Telefoon <span class="field-optional">(optioneel)</span><input name="telefoon" type="tel" autocomplete="tel" /></label>
+        <label>Shootsoort
           <select name="shootsoort" required>
-            <option value="">Kies een shootsoort</option>
-            <option>Kinderen</option>
-            <option>Gezin</option>
-            <option>Huisdier</option>
-            <option>Portret</option>
-            <option>Anders / in overleg</option>
+            <option value="">Kies een shootsoort</option><option>Kinderen</option><option>Gezin</option><option>Huisdier</option><option>Portret</option><option>Anders / in overleg</option>
           </select>
         </label>
-        <label>
-          Pakket
-          <select name="pakket" required>
+        <label>Pakket <span class="field-optional">(optioneel)</span>
+          <select name="pakket">
             <option value="">Kies een pakket</option>
-            {
-              packages.map((item) => (
-                <option selected={selectedPackage === item.name}>{item.name} - {item.price}</option>
-              ))
-            }
+            {packages.map((item) => <option selected={selectedPackage === item.name}>{item.name} - {item.price}</option>)}
             <option>Ik twijfel nog</option>
           </select>
         </label>
-        <label>
-          Voorkeursdatum
-          <input name="voorkeursdatum" type="date" />
-        </label>
-        <label>
-          Locatie of plaats
-          <input name="locatie" type="text" placeholder="Bijv. Naaldwijk, strand, park of thuis" required />
-        </label>
-        <label>
-          Aantal personen/dieren
-          <input name="aantal" type="text" placeholder="Bijv. 2 volwassenen, 2 kinderen en hond" required />
-        </label>
+        <label>Voorkeursdatum <input name="voorkeursdatum" type="date" /></label>
+        <label>Locatie of plaats <span class="field-optional">(optioneel)</span><input name="locatie" type="text" placeholder="Bijv. Naaldwijk, strand, park of thuis" /></label>
+        <label>Aantal personen/dieren <span class="field-optional">(optioneel)</span><input name="aantal" type="text" placeholder="Bijv. 2 volwassenen, 2 kinderen en hond" /></label>
       </div>
-      <label>
-        Bericht
-        <textarea name="bericht" rows="6" placeholder="Vertel kort wat je voor je ziet." required></textarea>
-      </label>
+      <label>Bericht <textarea name="bericht" rows="6" placeholder="Vertel kort wat je voor je ziet." required></textarea></label>
       <label class="check-label">
         <input name="privacy" type="checkbox" required />
         <span>Ik ga akkoord met de verwerking van mijn gegevens voor deze aanvraag en heb de <a href="/privacy/">privacyverklaring</a> gelezen.</span>
       </label>
       <button class="button" type="submit">Aanvraag versturen</button>
-      <p class="form-note">Na verzending neemt Bas persoonlijk contact met je op.</p>
+      <p class="form-note">Je legt niets definitief vast met dit formulier.</p>
     </form>
   </section>
+
+  <script>
+    const form = document.querySelector<HTMLFormElement>("[data-contact-form]");
+    const errorMessage = document.querySelector<HTMLElement>("[data-contact-error]");
+
+    form?.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      errorMessage?.setAttribute("hidden", "");
+      const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+      const formData = new FormData(form);
+      if (submitButton) {
+        submitButton.disabled = true;
+        submitButton.textContent = "Aanvraag versturen…";
+      }
+      try {
+        const response = await fetch(form.action, {
+          method: "POST",
+          headers: { Accept: "application/json", "Content-Type": "application/json" },
+          body: JSON.stringify(Object.fromEntries(formData)),
+        });
+        if (!response.ok || !response.redirected) throw new Error("Contact form submission failed");
+        window.location.assign(response.url);
+      } catch {
+        errorMessage?.removeAttribute("hidden");
+        if (submitButton) {
+          submitButton.disabled = false;
+          submitButton.textContent = "Aanvraag versturen";
+        }
+      }
+    });
+  </script>
 </Layout>

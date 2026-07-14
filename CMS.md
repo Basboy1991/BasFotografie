@@ -18,7 +18,7 @@ Deze site gebruikt Sanity als CMS, met lokale fallback-content zolang er geen Sa
 ```bash
 PUBLIC_SANITY_PROJECT_ID=je-project-id
 PUBLIC_SANITY_DATASET=production
-PUBLIC_SANITY_API_VERSION=2026-07-07
+PUBLIC_SANITY_API_VERSION=2026-07-09
 
 SANITY_STUDIO_PROJECT_ID=je-project-id
 SANITY_STUDIO_DATASET=production
@@ -45,7 +45,7 @@ Zet deze waarden in Vercel voor Production, Preview en Development:
 ```bash
 PUBLIC_SANITY_PROJECT_ID=k2m6gkis
 PUBLIC_SANITY_DATASET=production
-PUBLIC_SANITY_API_VERSION=2026-07-09
+PUBLIC_SANITY_API_VERSION=2026-07-07
 SANITY_STUDIO_PROJECT_ID=k2m6gkis
 SANITY_STUDIO_DATASET=production
 ```
@@ -62,4 +62,4 @@ Portfolio-items staan standaard niet gepubliceerd. Zet `Publiceren` pas aan als 
 
 ## Publiceren
 
-De Astro-site haalt Sanity-content tijdens `npm run build` op. Op Netlify kun je een Sanity webhook laten triggeren die de site opnieuw bouwt na wijzigingen.
+De Astro-site haalt Sanity-content tijdens `npm run build` op. In Sanity kun je een webhook instellen die na wijzigingen een nieuwe Vercel-deployment start.

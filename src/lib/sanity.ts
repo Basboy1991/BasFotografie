@@ -7,7 +7,7 @@ const projectId =
   "k2m6gkis";
 const dataset =
   import.meta.env.PUBLIC_SANITY_DATASET || import.meta.env.SANITY_STUDIO_DATASET || "production";
-const apiVersion = import.meta.env.PUBLIC_SANITY_API_VERSION || "2026-07-07";
+const apiVersion = import.meta.env.PUBLIC_SANITY_API_VERSION || "2026-07-09";
 
 export const sanityEnabled =
   Boolean(projectId) && projectId !== "replace-me" && Boolean(dataset);

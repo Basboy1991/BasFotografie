@@ -32,6 +32,7 @@ const pageTitle =
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={resolvedDescription} />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content={new URL(currentPath, Astro.site).toString()} />
     <meta property="og:locale" content="nl_NL" />
     <meta name="theme-color" content="#c05c43" />
     <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml" />
@@ -45,6 +46,9 @@ const pageTitle =
         <a class="brand" href="/" aria-label="Bas Fotografie home">
           <img class="brand-wordmark" src="/assets/branding/bas-fotografie-wordmark.svg" alt="Bas Fotografie" />
         </a>
+        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-menu">
+          Menu
+        </button>
         <div class="nav-links" id="site-menu">
           {
             navItems.map((item) => (
@@ -87,5 +91,16 @@ const pageTitle =
       </div>
       <p class="footer-bottom">&copy; {new Date().getFullYear()} {site.name}. Alle rechten voorbehouden.</p>
     </footer>
+    <script>
+      document.documentElement.classList.add("js");
+      const menuButton = document.querySelector<HTMLButtonElement>(".nav-toggle");
+      const menu = document.querySelector<HTMLElement>("#site-menu");
+
+      menuButton?.addEventListener("click", () => {
+        const isOpen = menuButton.getAttribute("aria-expanded") === "true";
+        menuButton.setAttribute("aria-expanded", String(!isOpen));
+        menu?.classList.toggle("is-open", !isOpen);
+      });
+    </script>
   </body>
 </html>
