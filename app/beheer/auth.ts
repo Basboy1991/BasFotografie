@@ -1,0 +1,2 @@
+import {getOwnerSession} from '../owner-auth';import {getDb} from '@/db';import {owner} from '@/db/schema';import {redirect} from 'next/navigation';
+export async function requireOwner(){const user=await getOwnerSession();if(!user||user.email.toLowerCase()!=='bas@avonturia.nl')redirect('/beheer');const current=(await getDb().select().from(owner).limit(1))[0];if(current?.userId!==user.userId)redirect('/beheer');return user;}

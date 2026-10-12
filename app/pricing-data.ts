@@ -1,0 +1,9 @@
+import {getDb} from '@/db';import {pricing} from '@/db/schema';
+export const sessions=[{slug:'gezinnen',category:'Gezin',label:'Gezinsfotografie',description:'Voor jullie momenten samen.'},{slug:'huisdieren',category:'Dieren',label:'Huisdierenfotografie',description:'Voor het karakter van je dier.'},{slug:'portretten',category:'Portret',label:'Portretfotografie',description:'Voor een portret dat bij je past.'}] as const;
+const starterPrices:Record<string,{priceCents:number;priceType:string;included:string;note:string}>={
+ Gezin:{priceCents:14900,priceType:'vast',included:'Tot 60 minuten op een locatie in het Westland · 8 zorgvuldig bewerkte digitale foto’s · persoonlijk online klantalbum',note:'Voor één gezin. Heb je een groter gezelschap of andere wensen? Vraag vooraf een voorstel aan.'},
+ Dieren:{priceCents:12900,priceType:'vast',included:'Tot 45 minuten op een locatie in het Westland · 6 zorgvuldig bewerkte digitale foto’s · persoonlijk online klantalbum',note:'Voor één huisdier. Meerdere dieren of een langere sessie? Vraag vooraf een voorstel aan.'},
+ Portret:{priceCents:9900,priceType:'vast',included:'Tot 30 minuten op een locatie in het Westland · 4 zorgvuldig bewerkte digitale foto’s · persoonlijk online klantalbum',note:'Voor één persoon. Voor zakelijke inzet of extra wensen maken we vooraf een passend voorstel.'},
+};
+export async function getPricing(){let rows:typeof pricing.$inferSelect[]=[];try{rows=await getDb().select().from(pricing);}catch{}return sessions.map(session=>({...session,price:rows.find(x=>x.category===session.category)||starterPrices[session.category]}));}
+export function displayPrice(cents:number|null|undefined,type:string|undefined){return cents==null?'Prijs in overleg':`${type==='vanaf'?'Vanaf ':''}${new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR'}).format(cents/100)}`;}

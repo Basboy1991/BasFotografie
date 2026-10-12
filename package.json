@@ -1,27 +1,36 @@
 {
-  "name": "bas-fotografie",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "dev": "astro dev --host 127.0.0.1",
-    "build": "astro check && astro build",
-    "preview": "astro preview --host 127.0.0.1",
-    "cms": "sanity dev",
-    "cms:build": "sanity build",
-    "cms:deploy": "sanity deploy",
-    "cms:import": "node scripts/import-sanity-content.mjs"
-  },
-  "dependencies": {
-    "@astrojs/check": "^0.9.4",
-    "@astrojs/sitemap": "^3.3.1",
-    "@astrojs/vercel": "^8.2.11",
-    "@sanity/client": "^7.23.0",
-    "@sanity/image-url": "^2.1.1",
-    "@sanity/vision": "^6.4.0",
-    "astro": "^5.13.5",
-    "sanity": "^6.4.0",
-    "styled-components": "^6.4.3",
-    "typescript": "^5.9.2"
-  }
+ "name": "bas-fotografie",
+ "version": "1.0.0",
+ "private": true,
+ "type": "module",
+ "engines": {
+  "node": ">=22"
+ },
+ "scripts": {
+  "dev": "next dev --hostname 127.0.0.1",
+  "build": "node scripts/generate-source-export.mjs && next build",
+  "start": "next start --hostname 127.0.0.1",
+  "check": "tsc --noEmit",
+  "test": "node --test tests/*.test.mjs",
+  "db:import": "node --env-file=.env.local scripts/import-export.mjs",
+  "auth:password": "node scripts/password-hash.mjs"
+ },
+ "dependencies": {
+  "@neondatabase/serverless": "1.2.0",
+  "@vercel/blob": "2.8.1",
+  "drizzle-orm": "0.45.2",
+  "iron-session": "9.0.1",
+  "next": "16.3.4",
+  "react": "19.2.6",
+  "react-dom": "19.2.6"
+ },
+ "devDependencies": {
+  "@electric-sql/pglite": "^0.3.14",
+  "@tailwindcss/postcss": "4.2.1",
+  "@types/node": "22.19.19",
+  "@types/react": "19.2.14",
+  "@types/react-dom": "19.2.3",
+  "tailwindcss": "4.2.1",
+  "typescript": "5.9.3"
+ }
 }
