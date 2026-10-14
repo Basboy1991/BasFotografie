@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {hashPassword,verifyPassword} from '../lib/password.mjs';
+import {hashPassword,verifyPassword,isPasswordHash} from '../lib/password.mjs';
 import {sealData,unsealData} from 'iron-session';
 test('password hashing uses fresh salts and rejects incorrect/malformed credentials',async()=>{
  const password='local-test-password-only';const first=await hashPassword(password),second=await hashPassword(password);
+ assert.equal(isPasswordHash(first),true);assert.equal(isPasswordHash(password),false);assert.equal(isPasswordHash(undefined),false);
  assert.notEqual(first,second);assert.equal(await verifyPassword(password,first),true);assert.equal(await verifyPassword('wrong-password',first),false);assert.equal(await verifyPassword(password,'scrypt:not-a-hash'),false);
  await assert.rejects(hashPassword('short'));
 });
