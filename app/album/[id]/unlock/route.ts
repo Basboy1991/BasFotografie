@@ -12,14 +12,8 @@ export async function POST(request:Request,{params}:{params:Promise<{id:string}>
   const destination=new URL(`/album/${id}?toegang=${token}`,request.url);
   if(password.length>0&&password.length<=200&&await verifyAlbumPassword(password,album.passwordHash)){
     await grantAlbumSession(id,album.tokenHash,album.passwordHash);
-    const response=Response.redirect(destination,303);
-    response.headers.set('Cache-Control','private, no-store');
-    response.headers.set('Referrer-Policy','no-referrer');
-    return response;
+    return new Response(null,{status:303,headers:{Location:destination.toString(),'Cache-Control':'private, no-store','Referrer-Policy':'no-referrer'}});
   }
   destination.searchParams.set('fout','1');
-  const response=Response.redirect(destination,303);
-  response.headers.set('Cache-Control','private, no-store');
-  response.headers.set('Referrer-Policy','no-referrer');
-  return response;
+  return new Response(null,{status:303,headers:{Location:destination.toString(),'Cache-Control':'private, no-store','Referrer-Policy':'no-referrer'}});
 }
