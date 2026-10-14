@@ -24,9 +24,15 @@ npm ci
 npm run db:import -- /absoluut/pad/naar/uitgepakte-export
 ```
 
-De import maakt het Postgres-schema, zet de gegevens transactioneel over, koppelt beheer aan de nieuwe login en uploadt alleen foto’s die niet al zijn meegeleverd. De acht meegeleverde portfoliofoto’s staan onder `public/portfolio-eigen`. Foto’s in privé-klantalbums blijven privé. Albumlink- en wachtwoordhashes blijven behouden; sessiecookies moeten opnieuw worden aangemaakt door in te loggen.
+Controleer eerst zonder databaseverbinding of wijzigingen:
 
-De import gebruikt upserts en kan opnieuw worden uitgevoerd, maar een oude export kan daarmee recentere wijzigingen overschrijven. Gebruik de export alleen tijdens de migratie naar een nieuw doel.
+```sh
+node scripts/import-export.mjs /absoluut/pad/naar/uitgepakte-export --dry-run
+```
+
+De import valideert alle gegevens en fotobestanden vóór wijzigingen, maakt het Postgres-schema, zet de gegevens transactioneel over, koppelt beheer aan de nieuwe login en uploadt alleen foto’s die niet al zijn meegeleverd. De acht meegeleverde portfoliofoto’s staan onder `public/portfolio-eigen`. Foto’s in privé-klantalbums blijven privé. Albumlink- en wachtwoordhashes blijven behouden; sessiecookies moeten opnieuw worden aangemaakt door in te loggen.
+
+De import weigert een database die al inhoud bevat, vóór foto-uploads en gegevenswijzigingen. Alleen een reeds ingestelde eigenaar is toegestaan. Bestaande Blob-foto’s worden niet overschreven. Gebruik een nieuwe, lege database en voer de import uit vóór de eerste portfolio-preview: een bezoek kan standaardportfolio’s aanmaken. Herhaal de import niet op een actieve database. Laat tijdens de import geen bezoekers of beheeracties toe; databasegegevens en Blob-uploads vormen geen gezamenlijke transactie. Controleer na een mislukte import op gedeeltelijk geüploade foto’s vóór een nieuwe poging.
 
 ## Lokaal uitvoeren en controleren
 
