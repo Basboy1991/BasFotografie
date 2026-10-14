@@ -8,7 +8,7 @@
  },
  "scripts": {
   "dev": "next dev --hostname 127.0.0.1",
-  "build": "node scripts/generate-source-export.mjs && next build",
+  "build": "node scripts/migrate-db.mjs && node scripts/generate-source-export.mjs && next build",
   "start": "next start --hostname 127.0.0.1",
   "check": "node scripts/generate-source-export.mjs && tsc --noEmit",
   "test": "node --test tests/*.test.mjs",
