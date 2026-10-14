@@ -36,6 +36,8 @@ De import weigert een database die al inhoud bevat, vóór foto-uploads en gegev
 
 ## Lokaal uitvoeren en controleren
 
+Vercel-builds controleren vóór de Next.js-build het schema in de database die aan die deployment is gekoppeld. Dat is nodig voor nieuwe Neon-databasebranches. Deze stap maakt ontbrekende tabellen en indexen aan, zonder inhoud te importeren, gegevens te overschrijven of tabellen te verwijderen. Een ontbrekende of onbereikbare database blokkeert de Vercel-build. Lokale builds zonder DATABASE_URL slaan deze stap over. Importeer de export afzonderlijk naar de gecontroleerde lege doelomgeving.
+
 ```sh
 npm run check
 npm test
