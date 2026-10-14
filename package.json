@@ -10,7 +10,7 @@
   "dev": "next dev --hostname 127.0.0.1",
   "build": "node scripts/generate-source-export.mjs && next build",
   "start": "next start --hostname 127.0.0.1",
-  "check": "tsc --noEmit",
+  "check": "node scripts/generate-source-export.mjs && tsc --noEmit",
   "test": "node --test tests/*.test.mjs",
   "db:import": "node --env-file=.env.local scripts/import-export.mjs",
   "auth:password": "node scripts/password-hash.mjs"
