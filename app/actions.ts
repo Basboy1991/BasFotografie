@@ -14,6 +14,8 @@ import { revalidatePath } from 'next/cache';
 import {parseHomeBlocks} from './home-blocks';
 import {readHomeBlocks} from './home-blocks-data';
 import { redirect } from 'next/navigation';
+import {deliverAppointmentEmails} from '@/lib/email.mjs';
+import {clientReceipt,ownerNotice} from './email-templates';
 import {newAlbumToken,newAlbumPassword,hashAlbumPassword,tokenHash} from './album/security';
 
 async function allowed() {
@@ -41,7 +43,10 @@ export async function requestAppointment(form: FormData) {
   if(date){const parsed=new Date(`${date}T12:00:00Z`);const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||Number.isNaN(parsed.getTime())||parsed.toISOString().slice(0,10)!==date||date<today)throw new Error('Kies een geldige datum vanaf vandaag.');}
   const recent=await getDb().select({count:sql<number>`count(*)`}).from(requests).where(and(eq(requests.email,email.toLowerCase()),gte(requests.createdAt,Date.now()-3600000)));
   if (Number(recent[0]?.count||0)>=3) throw new Error('Je hebt al meerdere aanvragen verstuurd. Probeer het later opnieuw.');
-  await getDb().insert(requests).values({id:crypto.randomUUID(),name,email:email.toLowerCase(),type,date,message,createdAt:Date.now(),status:'nieuw'});
+  const item={id:crypto.randomUUID(),name,email:email.toLowerCase(),type,date,message,createdAt:Date.now(),status:'nieuw'};
+  await getDb().insert(requests).values(item);
+  const delivery=await deliverAppointmentEmails(item,{client:clientReceipt(name,item.id),owner:ownerNotice(item.id)});
+  if(delivery.status==='failed'||delivery.status==='not_configured')console.error('appointment_email_delivery',{id:item.id,status:delivery.status,results:delivery.results});
   redirect('/afspraak/bedankt');
 }
 export async function setRequestStatus(form: FormData) {
