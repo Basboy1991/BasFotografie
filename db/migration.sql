@@ -1,0 +1,11 @@
+CREATE TABLE IF NOT EXISTS owner (id integer PRIMARY KEY, user_id text NOT NULL);
+CREATE TABLE IF NOT EXISTS portfolio (id text PRIMARY KEY, title text NOT NULL, category text NOT NULL, image_key text NOT NULL, position bigint NOT NULL DEFAULT 0, alt_text text NOT NULL DEFAULT '', published boolean NOT NULL DEFAULT true);
+CREATE TABLE IF NOT EXISTS requests (id text PRIMARY KEY, name text NOT NULL, email text NOT NULL, type text NOT NULL, date text, message text, created_at bigint NOT NULL, status text NOT NULL DEFAULT 'nieuw');
+CREATE INDEX IF NOT EXISTS requests_email_created ON requests(email,created_at);
+CREATE TABLE IF NOT EXISTS albums (id text PRIMARY KEY, title text NOT NULL, client text NOT NULL, email text NOT NULL, token_hash text NOT NULL, password_hash text, created_at bigint NOT NULL);
+CREATE TABLE IF NOT EXISTS photos (id text PRIMARY KEY, album_id text NOT NULL REFERENCES albums(id) ON DELETE CASCADE, image_key text NOT NULL, filename text NOT NULL);
+CREATE INDEX IF NOT EXISTS photos_album ON photos(album_id);
+CREATE TABLE IF NOT EXISTS site_content (key text PRIMARY KEY, value text NOT NULL);
+CREATE TABLE IF NOT EXISTS pricing (category text PRIMARY KEY, price_cents integer, price_type text NOT NULL DEFAULT 'vanaf', included text NOT NULL DEFAULT '', note text NOT NULL DEFAULT '');
+CREATE TABLE IF NOT EXISTS faqs (id text PRIMARY KEY, question text NOT NULL, answer text NOT NULL, position bigint NOT NULL DEFAULT 0, published boolean NOT NULL DEFAULT true);
+CREATE TABLE IF NOT EXISTS admin_login_attempts (key text PRIMARY KEY, window_start bigint NOT NULL, attempts integer NOT NULL);

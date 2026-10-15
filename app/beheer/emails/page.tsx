@@ -1,0 +1,9 @@
+import type {Metadata} from 'next';
+import {requireOwner} from '../auth';
+import AdminShell from '../components/admin-shell';
+import {emailConfiguration} from '@/lib/email.mjs';
+import {sendEmailTest} from './actions';
+import {clientReceipt,ownerNotice} from '../../email-templates';
+export const dynamic='force-dynamic';
+export const metadata:Metadata={title:'E-mailvoorbeelden',robots:{index:false,follow:false}};
+export default async function EmailPreviews({searchParams}:{searchParams:Promise<{test?:string}>}){await requireOwner();const config=emailConfiguration(),{test}=await searchParams;const client=clientReceipt('Voornaam'),owner=ownerNotice('voorbeeld');return <AdminShell title="E-mailvoorbeelden." description="Ontvangstbevestigingen en meldingen worden via de bestaande e-mailinstellingen verstuurd. In Preview worden aanvragen opgeslagen zonder automatische e-mails."><section className="panel"><h2>E-mailverbinding</h2><p>{config.ready?`Afzender: ${config.from}. Meldingen naar: ${config.to}.`:"De e-mailconfiguratie is nog niet compleet."}</p>{test&&<p role="status">{test==='sent'?'Beide testberichten zijn door de e-maildienst geaccepteerd. Controleer je inbox en spammap.':'Testverzending mislukt. Controleer de Resend-sleutel en de geverifieerde afzender.'}</p>}<form action={sendEmailTest}><button className="button" disabled={!config.ready}>Stuur beide voorbeelden als test naar Bas</button></form></section><div className="email-previews"><section><p className="eyebrow">Klant · voorbereid</p><h2>{client.subject}</h2><iframe title="Voorbeeld ontvangstbevestiging" srcDoc={client.html} sandbox=""/></section><section><p className="eyebrow">Bas · melding</p><h2>{owner.subject}</h2><iframe title="Voorbeeld interne melding" srcDoc={owner.html} sandbox=""/></section></div></AdminShell>}

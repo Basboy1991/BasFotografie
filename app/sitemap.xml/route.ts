@@ -1,0 +1,4 @@
+export const dynamic='force-dynamic';
+import {siteUrl} from '../site-url';import {categories,getCategoryAlbum,type CategorySlug} from '../portfolio-data';
+const paths=['/','/diensten/gezinnen','/diensten/huisdieren','/diensten/portretten','/tarieven','/werkwijze','/over-mij','/afspraak','/veelgestelde-vragen','/privacy'];
+export async function GET(){const albums=await Promise.all((Object.keys(categories) as CategorySlug[]).map(async slug=>({slug,...await getCategoryAlbum(slug)})));const indexed=albums.filter(x=>!x.sample).map(x=>`/portfolio/${x.slug}`);if(indexed.length===albums.length)indexed.unshift('/portfolio');const xml=`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${[...paths,...indexed].map(path=>`<url><loc>${new URL(path,siteUrl).toString()}</loc></url>`).join('')}</urlset>`;return new Response(xml,{headers:{'Content-Type':'application/xml; charset=utf-8','Cache-Control':'public, max-age=3600'}})}

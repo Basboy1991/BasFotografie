@@ -1,0 +1,5 @@
+import {readSeo} from '../seo-data';
+import type {Metadata} from 'next';import Link from 'next/link';import {readContent} from '../content';
+export async function generateMetadata():Promise<Metadata>{const seo=await readSeo('/over-mij');return {title:seo?.title,description:seo?.description,alternates:{canonical:'/over-mij'}};}
+export const dynamic='force-dynamic';
+export default async function About(){const copy=await readContent();return <main className="wrap subpage"><div className="page-lead"><p className="eyebrow">Over mij</p><h1 data-edit-key="aboutHeading">{copy.aboutHeading}</h1><p data-edit-key="aboutIntro">{copy.aboutIntro}</p></div><div className="editorial-grid"><div className="editorial-accent"><span>B</span><small>Bas Fotografie</small></div><div><h2 data-edit-key="aboutSectionHeading">{copy.aboutSectionHeading}</h2><p data-edit-key="aboutMore">{copy.aboutMore}</p><p data-edit-key="aboutDetails">{copy.aboutDetails}</p><Link className="text-link" href="/werkwijze">Bekijk mijn werkwijze ↗</Link></div></div><div className="page-cta"><h2>Zullen we kennismaken?</h2><Link className="button" href="/afspraak">Stuur een aanvraag ↗</Link></div></main>}

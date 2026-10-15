@@ -1,0 +1,17 @@
+import {getDb} from '@/db';import {siteContent} from '@/db/schema';import {inArray} from 'drizzle-orm';
+export const seoPages=[
+ {path:'/',label:'Homepage',title:'Bas Fotografie | Fotograaf in het Westland',description:'Warme, ongedwongen gezinsfotografie, huisdierenfotografie en portretten in het Westland. Bekijk het portfolio en vraag een fotosessie aan.'},
+ {path:'/portfolio',label:'Portfolio',title:'Portfolio: gezinnen, huisdieren en portretten',description:'Ontdek de drie portfolioalbums van Bas Fotografie: gezinsfotografie, huisdierenfotografie en portretfotografie.'},
+ {path:'/portfolio/gezinnen',label:'Album gezinnen',title:'Portfolio gezinsfotografie',description:'Bekijk het album gezinsfotografie van Bas Fotografie. Warme, ongedwongen beelden van gezinnen en hun momenten samen.'},
+ {path:'/portfolio/huisdieren',label:'Album huisdieren',title:'Portfolio huisdierenfotografie',description:'Bekijk het album huisdierenfotografie van Bas Fotografie. Foto’s met aandacht voor het karakter van ieder dier.'},
+ {path:'/portfolio/portretten',label:'Album portretten',title:'Portfolio portretfotografie',description:'Bekijk het album portretfotografie van Bas Fotografie. Rustige, persoonlijke portretten.'},
+ {path:'/diensten/gezinnen',label:'Gezinsfotografie',title:'Gezinsfotografie',description:'Gezinsfoto’s met ruimte voor spelen, knuffelen en jullie eigen dynamiek. Ontdek de aanpak van Bas Fotografie en vraag een fotosessie aan.'},
+ {path:'/diensten/huisdieren',label:'Huisdierenfotografie',title:'Huisdierenfotografie',description:'Fotografie die het karakter van jouw huisdier laat zien. Met geduld, aandacht en ruimte voor het eigen tempo van je dier.'},
+ {path:'/diensten/portretten',label:'Portretfotografie',title:'Portretfotografie',description:'Persoonlijke portretten zonder geforceerde poses. Ontdek hoe Bas Fotografie een ontspannen portretsessie aanpakt.'},
+ {path:'/tarieven',label:'Tarieven',title:'Tarieven fotosessies in het Westland',description:'Bekijk de tarieven en inbegrepen foto’s voor gezinsfotografie, huisdierenfotografie en portretten bij Bas Fotografie in het Westland.'},
+ {path:'/werkwijze',label:'Werkwijze',title:'Werkwijze fotosessie',description:'Zo verloopt een fotosessie bij Bas Fotografie: kennismaken, ontspannen fotograferen en daarna je beelden bekijken in een privé klantalbum.'},
+ {path:'/over-mij',label:'Over mij',title:'Over Bas en zijn fotografie',description:'Maak kennis met Bas. Hij fotografeert gezinnen, huisdieren en portretten op een warme, pure en ontspannen manier.'},
+ {path:'/afspraak',label:'Afspraak aanvragen',title:'Afspraak aanvragen voor een fotosessie',description:'Vraag een gezinsfotosessie, huisdierenfotografie of portretsessie aan bij Bas Fotografie. Vertel je wensen en Bas neemt contact op.'},
+ {path:'/veelgestelde-vragen',label:'Veelgestelde vragen',title:'Veelgestelde vragen over fotosessies',description:'Antwoorden over afspraken, voorbereiding, tarieven en het privé klantalbum bij Bas Fotografie.'},
+] as const;
+export async function readSeo(path:string){const fallback=seoPages.find(x=>x.path===path);if(!fallback)return null;try{const keys=[`seo:${path}:title`,`seo:${path}:description`];const rows=await getDb().select().from(siteContent).where(inArray(siteContent.key,keys));return {title:rows.find(x=>x.key===keys[0])?.value||fallback.title,description:rows.find(x=>x.key===keys[1])?.value||fallback.description};}catch{return {title:fallback.title,description:fallback.description};}}

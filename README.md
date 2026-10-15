@@ -1,0 +1,58 @@
+# Bas Fotografie
+
+Fotografieportfolio, afspraken, visuele website-editor en beveiligde klantalbums. Dit is de gemigreerde Sites-website, gebouwd met Next.js voor GitHub/Vercel.
+
+## Benodigde inrichting
+
+- Vercel-project: `bas-fotografie` in team `bas-projects-68858507`.
+- Framework: **Next.js**. Installatie: `npm ci`. Build: `npm run build`. Laat Output Directory leeg.
+- Koppel via **Storage → Create Database** een **Neon Postgres**-database. Dit levert `DATABASE_URL`. Gebruik een aparte database voor Preview.
+- Koppel via **Storage → Create Storage → Blob** een **Private** Blob-store. Gebruik geen openbare store voor klantfoto’s. De SDK gebruikt `BLOB_STORE_ID` en Vercel OIDC. Buiten Vercel gebruik je een server-only `BLOB_READ_WRITE_TOKEN`.
+- Voeg `ADMIN_PASSWORD_HASH` en `SESSION_SECRET` toe als geheime Vercel-variabelen. `SESSION_SECRET` moet een afzonderlijke willekeurige waarde van minimaal 32 tekens zijn. Stel deze rechtstreeks in Vercel in, niet in GitHub en niet in chat.
+- Stel `SITE_URL` in op je uiteindelijke site-origin, standaard `https://bas-fotografie.vercel.app`.
+
+Maak een wachtwoordhash met `npm run auth:password`. Het wachtwoord wordt verborgen ingevoerd; alleen de hash wordt weergegeven. Gebruik minimaal 12 tekens. Een nieuwe hash maakt bestaande beheersessies ongeldig.
+
+## Bestaande export importeren
+
+Pak de ZIP uit **buiten de repository**. De map `backup` bevat persoonlijke gegevens en hoort nooit in een openbare GitHub-repository.
+
+Maak lokaal een genegeerd `.env.local` met de ontwikkel-/importtoegang voor de gekozen database en privéopslag. Deel deze waarden niet in chat. Voer uit:
+
+```sh
+npm ci
+npm run db:import -- /absoluut/pad/naar/uitgepakte-export
+```
+
+Controleer eerst zonder databaseverbinding of wijzigingen:
+
+```sh
+node scripts/import-export.mjs /absoluut/pad/naar/uitgepakte-export --dry-run
+```
+
+De import valideert alle gegevens en fotobestanden vóór wijzigingen, maakt het Postgres-schema, zet de gegevens transactioneel over, koppelt beheer aan de nieuwe login en uploadt alleen foto’s die niet al zijn meegeleverd. De acht meegeleverde portfoliofoto’s staan onder `public/portfolio-eigen`. Foto’s in privé-klantalbums blijven privé. Albumlink- en wachtwoordhashes blijven behouden; sessiecookies moeten opnieuw worden aangemaakt door in te loggen.
+
+De import weigert een database die al inhoud bevat, vóór foto-uploads en gegevenswijzigingen. Alleen een reeds ingestelde eigenaar is toegestaan. Bestaande Blob-foto’s worden niet overschreven. Gebruik een nieuwe, lege database en voer de import uit vóór de eerste portfolio-preview: een bezoek kan standaardportfolio’s aanmaken. Herhaal de import niet op een actieve database. Laat tijdens de import geen bezoekers of beheeracties toe; databasegegevens en Blob-uploads vormen geen gezamenlijke transactie. Controleer na een mislukte import op gedeeltelijk geüploade foto’s vóór een nieuwe poging.
+
+## Lokaal uitvoeren en controleren
+
+Vercel-builds controleren vóór de Next.js-build het schema in de database die aan die deployment is gekoppeld. Dat is nodig voor nieuwe Neon-databasebranches. Deze stap maakt ontbrekende tabellen en indexen aan, zonder inhoud te importeren, gegevens te overschrijven of tabellen te verwijderen. Een ontbrekende of onbereikbare database blokkeert de Vercel-build. Lokale builds zonder DATABASE_URL slaan deze stap over. Importeer de export afzonderlijk naar de gecontroleerde lege doelomgeving.
+
+```sh
+npm run check
+npm test
+npm run build
+npm run dev
+```
+
+Beheer: `/beheer/login`. Klanten blijven hun eigen albumlink en albumwachtwoord gebruiken. Aanvragen worden opgeslagen in Postgres; automatische e-mailverzending is nog niet gekoppeld. E-mailvoorbeelden zijn behouden.
+
+## Publiceren
+
+Pas nadat de opslag, login en import gereed zijn: koppel dit GitHub-project in Vercel, controleer de Preview (portfolio, aanvraag, login, upload, klantalbum en ZIP-export) en publiceer dezelfde commit naar Production. Vercel bouwt volgende wijzigingen automatisch vanaf `main`.
+
+De oude repositoryversie is bewaard op `backup-before-sites-migration-20261012`. De huidige Sites-publicatie wordt door deze repository niet aangepast.
+
+## Privacy en beveiliging
+
+De repository bevat alleen broncode en openbare portfoliofoto’s, geen aanvraaggegevens, klantfoto’s, wachtwoorden, tokens of actieve sessies. Beheer gebruikt versleutelde, tijdelijke HTTP-only sessiecookies en databasegestuurde beperking van inlogpogingen. Alle beheeracties controleren de eigenaar op de server. Foto-uploads vereisen een tijdelijk uploadrecht voor één specifiek bestand in privéopslag. Het ZIP-exportbestand bevat wel privégegevens; bewaar dat bestand privé.
