@@ -64,7 +64,7 @@ a, button, summary, input, textarea, select { -webkit-tap-highlight-color: trans
 .home-hero-actions { display: flex; align-items: center; flex-shrink: 0; gap: 24px; }
 .home-hero-actions .button { display: none; }
 .home-hero .image-disclaimer { top: 20px; right: 20px; bottom: auto; left: auto; z-index: 2; border-radius: 0; font-size: 11px; letter-spacing: .04em; }
-.home-hero .slideshow-toggle { bottom: 22px; right: var(--gutter); border: 1px solid rgb(255 255 255 / .55); background: rgb(26 28 22 / .55); padding: 9px 14px; border-radius: 2px; font-size: 11px; line-height: 1.5; }
+.home-hero .slideshow-toggle { bottom: 22px; right: var(--gutter); border: 1px solid rgb(255 255 255 / .55); background: rgb(26 28 22 / .55); padding: 9px 14px; min-height: 44px; min-width: 44px; border-radius: 2px; font-size: 11px; line-height: 1.5; }
 
 /* Albums: photographic proportions, varied placement and clear captions. */
 .home-portfolio { padding-block: clamp(65px, 7vw, 112px) clamp(78px, 8vw, 126px); }
@@ -154,7 +154,7 @@ a, button, summary, input, textarea, select { -webkit-tap-highlight-color: trans
 .service-visual figcaption { padding: 7px 10px; font-size: 11px; }
 .faq-list { border-color: var(--rule); }
 .faq-list details { border-color: var(--rule); padding-block: 23px; }
-.faq-list summary { font-size: 17px; line-height: 1.5; }
+.faq-list summary { font-size: 17px; line-height: 1.5; min-height: 48px; }
 .faq-list p { font-size: 15px; }
 .appointment-form { border: 1px solid var(--rule); background: #faf8f3; padding: clamp(24px, 4vw, 50px); }
 .field label { font-size: 13px; font-weight: 500; }
