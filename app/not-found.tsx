@@ -1,0 +1,4 @@
+import type {Metadata} from 'next';
+import Link from 'next/link';
+export const metadata:Metadata={title:'Pagina niet gevonden',description:'Dit adres is niet beschikbaar. Bekijk het portfolio van Bas Fotografie of neem contact op.',alternates:null,robots:{index:false,follow:process.env.VERCEL_ENV!=='preview'}};
+export default function NotFound(){return <main className="wrap subpage"><div className="page-lead"><p className="eyebrow">Pagina niet gevonden / 404</p><h1>We helpen je op weg.</h1><p>Dit adres is niet beschikbaar. Misschien is de link veranderd of is er een typefout in geslopen. Via het portfolio, de homepage of de contactpagina vind je de weg terug.</p></div><div className="related-links"><Link className="button" href="/">Naar de homepage ↗</Link><Link href="/portfolio">Bekijk het portfolio ↗</Link><Link href="/contact">Neem contact op met Bas ↗</Link></div></main>;}
