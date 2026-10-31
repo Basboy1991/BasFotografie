@@ -28,4 +28,18 @@ export async function ensureBundledPortfolio(){
  }
 }
 export async function getCategoryAlbum(slug:CategorySlug){const category=categories[slug];try{await ensureBundledPortfolio();const rows=await getDb().select().from(portfolio).where(and(eq(portfolio.category,category.db),eq(portfolio.published,true))).orderBy(asc(portfolio.position));if(rows.length)return {sample:false,images:rows.map(x=>({title:x.title,alt:x.altText||x.title,category:x.category,url:`/api/image/${x.imageKey}`}))};}catch{}return {sample:true,images:[{title:category.sample.title,alt:category.sample.alt,category:category.db,url:category.sample.url}]};}
-export async function getPortfolio(){try{await ensureBundledPortfolio();}catch{}const albums=await Promise.all((Object.keys(categories) as CategorySlug[]).map(getCategoryAlbum));const heroImages=Array.from({length:6},(_,i)=>albums[i%albums.length].images[Math.floor(i/albums.length)]).filter((image):image is PortfolioImage=>!!image).filter((image,i,all)=>all.findIndex(other=>other.url===image.url)===i);return {sample:albums.some(x=>x.sample),heroSample:albums[0].sample,images:albums.map(x=>x.images[0]),heroImages};}
+export async function readHeroImage(){
+ try{
+  const db=getDb();const setting=(await db.select().from(siteContent).where(eq(siteContent.key,'portfolio:hero')))[0];
+  if(!setting)return null;
+  return (await db.select().from(portfolio).where(and(eq(portfolio.imageKey,setting.value),eq(portfolio.published,true))).limit(1))[0]||null;
+ }catch{return null;}
+}
+export async function getPortfolio(){
+ try{await ensureBundledPortfolio();}catch{}
+ const [albums,cover]=await Promise.all([Promise.all((Object.keys(categories) as CategorySlug[]).map(getCategoryAlbum)),readHeroImage()]);
+ const selection=Array.from({length:6},(_,i)=>albums[i%albums.length].images[Math.floor(i/albums.length)]).filter((image):image is PortfolioImage=>!!image);
+ if(cover)selection.unshift({title:cover.title,alt:cover.altText||cover.title,category:cover.category,url:`/api/image/${cover.imageKey}`});
+ const heroImages=selection.filter((image,i,all)=>all.findIndex(other=>other.url===image.url)===i);
+ return {sample:albums.some(x=>x.sample),heroSample:cover?false:albums[0].sample,images:albums.map(x=>x.images[0]),heroImages};
+}

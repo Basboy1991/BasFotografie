@@ -7,6 +7,7 @@ import {storage as env} from '@/lib/storage';
 import { getOwnerSession } from './owner-auth';
 import { defaults, type ContentKey } from './content';
 import {visualPages} from './visual-fields';
+import {parseContentChanges} from './content-validation';
 import {sessions} from './pricing-data';
 import {seoPages} from './seo-data';
 import {defaultFaqs} from './faq-data';
@@ -55,8 +56,30 @@ export async function setRequestStatus(form: FormData) {
   await getDb().update(requests).set({status}).where(eq(requests.id,id));revalidatePath('/beheer');revalidatePath('/beheer/afspraken');
 }
 export async function deleteRequest(form:FormData){await allowed();const id=String(form.get('id')),confirm=String(form.get('confirm')||'').trim().toLowerCase();const db=getDb();const item=(await db.select().from(requests).where(eq(requests.id,id)))[0];if(!item||confirm!==item.email)throw new Error('Typ het e-mailadres van de aanvraag om te bevestigen.');await db.delete(requests).where(eq(requests.id,id));revalidatePath('/beheer');revalidatePath('/beheer/afspraken');}
-export async function saveContent(form:FormData){await allowed();const db=getDb();const values=(Object.keys(defaults) as ContentKey[]).filter(key=>form.has(key)).map(key=>({key,value:String(form.get(key)||'').trim()}));if(!values.length||values.some(x=>{const heading=x.key.endsWith('Heading')||x.key==='homeHeroTop'||x.key==='homeHeroBottom'||x.key.startsWith('homeClosingHeading'),compact=x.key.endsWith('Label')||x.key.endsWith('Link')||x.key.endsWith('Button')||x.key.endsWith('Eyebrow');return x.value.length<(heading?3:compact?2:20)||x.value.length>(heading?120:compact?80:1500)}))throw new Error('Controleer de lengte van de ingevulde teksten.');for(const item of values)await db.insert(siteContent).values(item).onConflictDoUpdate({target:siteContent.key,set:{value:item.value}});for(const route of ['/','/over-mij','/werkwijze','/portfolio','/diensten/gezinnen','/diensten/huisdieren','/diensten/portretten'])revalidatePath(route);revalidatePath('/beheer/teksten');}
-export async function saveVisualContent(key:ContentKey,value:string){await allowed();const pages=visualPages.filter(x=>x.fields.some(field=>field[0]===key));if(!pages.length)throw new Error('Onbekend tekstveld.');const clean=value.trim();const heading=key.endsWith('Heading')||key==='homeHeroTop'||key==='homeHeroBottom'||key.startsWith('homeClosingHeading');const compact=key.endsWith('Label')||key.endsWith('Link')||key.endsWith('Button')||key.endsWith('Eyebrow');const min=heading?3:compact?2:20,max=heading?120:compact?80:1500;if(clean.length<min||clean.length>max)throw new Error(`Gebruik ${min} tot ${max} tekens voor deze tekst.`);await getDb().insert(siteContent).values({key,value:clean}).onConflictDoUpdate({target:siteContent.key,set:{value:clean}});for(const page of pages)revalidatePath(page.path);revalidatePath('/beheer/teksten');return clean;}
+export async function saveVisualContents(changes:unknown){
+ await allowed();
+ const values=parseContentChanges(changes);
+ // One Postgres statement: either every valid field is saved, or none is.
+ await getDb().insert(siteContent).values(values).onConflictDoUpdate({target:siteContent.key,set:{value:sql`excluded.value`}});
+ const keys=new Set(values.map(item=>item.key));
+ for(const page of visualPages)if(page.fields.some(field=>keys.has(field[0])))revalidatePath(page.path);
+ revalidatePath('/beheer/teksten');revalidatePath('/beheer/teksten/lijst');
+ return Object.fromEntries(values.map(item=>[item.key,item.value])) as Partial<Record<ContentKey,string>>;
+}
+export async function saveContent(form:FormData){
+ const changes=Object.fromEntries((Object.keys(defaults) as ContentKey[]).filter(key=>form.has(key)).map(key=>[key,form.get(key)]));
+ await saveVisualContents(changes);
+}
+export async function saveVisualContent(key:ContentKey,value:string){
+ const result=await saveVisualContents({[key]:value});return result[key]!;
+}
+export async function setHeroImage(form:FormData){
+ await allowed();const imageKey=String(form.get('imageKey')||'');
+ const db=getDb();const image=(await db.select().from(portfolio).where(and(eq(portfolio.imageKey,imageKey),eq(portfolio.published,true))).limit(1))[0];
+ if(!image)throw new Error('Kies een gepubliceerde portfoliofoto.');
+ await db.insert(siteContent).values({key:'portfolio:hero',value:image.imageKey}).onConflictDoUpdate({target:siteContent.key,set:{value:image.imageKey}});
+ revalidatePath('/');revalidatePath('/beheer/portfolio');
+}
 export async function saveHomeBlocks(value:unknown){
  await allowed();
  const blocks=parseHomeBlocks(value);
