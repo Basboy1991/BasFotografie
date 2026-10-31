@@ -7,10 +7,11 @@
   "node": ">=22"
  },
  "scripts": {
-  "dev": "next dev --hostname 127.0.0.1",
-  "build": "node scripts/migrate-db.mjs && node scripts/generate-source-export.mjs && next build",
+  "dev": "node scripts/generate-portfolio-images.mjs && next dev --hostname 127.0.0.1",
+  "build": "node scripts/generate-portfolio-images.mjs && node scripts/migrate-db.mjs && node scripts/generate-source-export.mjs && next build",
   "start": "next start --hostname 127.0.0.1",
-  "check": "node scripts/generate-source-export.mjs && tsc --noEmit",
+  "check": "node scripts/generate-portfolio-images.mjs && node scripts/generate-source-export.mjs && tsc --noEmit",
+  "images:build": "node scripts/generate-portfolio-images.mjs",
   "test": "node --test tests/*.test.mjs",
   "db:import": "node --env-file=.env.local scripts/import-export.mjs",
   "auth:password": "node scripts/password-hash.mjs"
@@ -22,7 +23,8 @@
   "iron-session": "9.0.1",
   "next": "16.4.1",
   "react": "19.2.6",
-  "react-dom": "19.2.6"
+  "react-dom": "19.2.6",
+  "sharp": "0.35.5"
  },
  "devDependencies": {
   "@electric-sql/pglite": "^0.3.14",

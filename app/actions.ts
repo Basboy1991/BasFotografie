@@ -1,4 +1,5 @@
 'use server';
+import {parsePhotoFocus} from './photo-presentation';
 import {bundledPortfolioAssets} from './portfolio-assets';
 import { getDb } from '@/db';
 import { owner, portfolio, requests, albums, photos, siteContent, pricing, faqs } from '@/db/schema';
@@ -7,6 +8,7 @@ import {storage as env} from '@/lib/storage';
 import { getOwnerSession } from './owner-auth';
 import { defaults, type ContentKey } from './content';
 import {visualPages} from './visual-fields';
+import {parseContentChanges} from './content-validation';
 import {sessions} from './pricing-data';
 import {seoPages} from './seo-data';
 import {defaultFaqs} from './faq-data';
@@ -35,28 +37,75 @@ export async function claimOwner() {
   if (rows[0]?.userId !== user.userId) throw new Error('Beheer is al toegewezen.');
   revalidatePath('/beheer');
 }
-export async function requestAppointment(form: FormData) {
-  const name=String(form.get('name')||'').trim(), email=String(form.get('email')||'').trim(), type=String(form.get('type')||'').trim();
-  const date=String(form.get('date')||''), message=String(form.get('message')||'').trim();
-  if (form.get('website')) redirect('/afspraak/bedankt');
-  if (name.length<2 || name.length>120 || email.length>254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !['Gezin','Huisdier','Portret','Anders'].includes(type) || date.length>10 || message.length>3000) throw new Error('Controleer je gegevens.');
-  if(date){const parsed=new Date(`${date}T12:00:00Z`);const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||Number.isNaN(parsed.getTime())||parsed.toISOString().slice(0,10)!==date||date<today)throw new Error('Kies een geldige datum vanaf vandaag.');}
-  const recent=await getDb().select({count:sql<number>`count(*)`}).from(requests).where(and(eq(requests.email,email.toLowerCase()),gte(requests.createdAt,Date.now()-3600000)));
-  if (Number(recent[0]?.count||0)>=3) throw new Error('Je hebt al meerdere aanvragen verstuurd. Probeer het later opnieuw.');
-  const item={id:crypto.randomUUID(),name,email:email.toLowerCase(),type,date,message,createdAt:Date.now(),status:'nieuw'};
-  await getDb().insert(requests).values(item);
-  const delivery=await deliverAppointmentEmails(item,{client:clientReceipt(name,item.id),owner:ownerNotice(item.id)});
-  if(delivery.status==='failed'||delivery.status==='not_configured')console.error('appointment_email_delivery',{id:item.id,status:delivery.status,results:delivery.results});
-  redirect('/afspraak/bedankt');
+async function storeAppointment(form:FormData){
+ const name=String(form.get('name')||'').trim(),email=String(form.get('email')||'').trim().toLowerCase(),type=String(form.get('type')||'').trim();
+ const date=String(form.get('date')||''),message=String(form.get('message')||'').trim();
+ if(form.get('website'))return {ok:true} as const;
+ if(name.length<2||name.length>120||email.length>254||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||!['Gezin','Huisdier','Portret','Anders'].includes(type)||date.length>10||message.length>3000)return {ok:false,message:'Controleer je naam, e-mailadres en soort fotosessie.'} as const;
+ if(date){const parsed=new Date(`${date}T12:00:00Z`);const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||Number.isNaN(parsed.getTime())||parsed.toISOString().slice(0,10)!==date||date<today)return {ok:false,message:'Kies een geldige datum vanaf vandaag.'} as const;}
+ const id=String(form.get('submissionId')||crypto.randomUUID());
+ if(!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(id))return {ok:false,message:'Open het formulier opnieuw en probeer het nog eens.'} as const;
+ const db=getDb();
+ if((await db.select({id:requests.id}).from(requests).where(eq(requests.id,id)).limit(1)).length)return {ok:true} as const;
+ const recent=await db.select({count:sql<number>`count(*)`}).from(requests).where(and(eq(requests.email,email),gte(requests.createdAt,Date.now()-3600000)));
+ if(Number(recent[0]?.count||0)>=3)return {ok:false,message:'Je hebt al meerdere aanvragen verstuurd. Probeer het later opnieuw of mail me rechtstreeks.'} as const;
+ const item={id,name,email,type,date,message,createdAt:Date.now(),status:'nieuw'};
+ const inserted=await db.insert(requests).values(item).onConflictDoNothing().returning({id:requests.id});
+ if(!inserted.length)return {ok:true} as const;
+ let delivery:{status:string}={status:'failed'};
+ try{delivery=await deliverAppointmentEmails(item,{client:clientReceipt(name,id),owner:ownerNotice(id)});}catch{}
+ try{const key=`request:email:${id}`;await db.insert(siteContent).values({key,value:delivery.status}).onConflictDoUpdate({target:siteContent.key,set:{value:delivery.status}});}catch{console.error('appointment_email_status_unavailable',{id});}
+ revalidatePath('/beheer');revalidatePath('/beheer/afspraken');
+ return {ok:true} as const;
 }
+export async function submitAppointment(_previous:{message:string},form:FormData):Promise<{message:string}>{
+ let result;
+ try{result=await storeAppointment(form);}catch{return {message:'Opslaan is niet gelukt. Je invoer staat er nog. Probeer opnieuw of mail me rechtstreeks.'};}
+ if(!result.ok)return {message:result.message};
+ redirect('/afspraak/bedankt');
+}
+export async function requestAppointment(form:FormData){const result=await storeAppointment(form);if(!result.ok)throw new Error(result.message);redirect('/afspraak/bedankt');}
 export async function setRequestStatus(form: FormData) {
   await allowed(); const id=String(form.get('id')), status=String(form.get('status'));
   if (!['nieuw','in behandeling','afgerond'].includes(status)) throw new Error('Ongeldige status');
   await getDb().update(requests).set({status}).where(eq(requests.id,id));revalidatePath('/beheer');revalidatePath('/beheer/afspraken');
 }
 export async function deleteRequest(form:FormData){await allowed();const id=String(form.get('id')),confirm=String(form.get('confirm')||'').trim().toLowerCase();const db=getDb();const item=(await db.select().from(requests).where(eq(requests.id,id)))[0];if(!item||confirm!==item.email)throw new Error('Typ het e-mailadres van de aanvraag om te bevestigen.');await db.delete(requests).where(eq(requests.id,id));revalidatePath('/beheer');revalidatePath('/beheer/afspraken');}
-export async function saveContent(form:FormData){await allowed();const db=getDb();const values=(Object.keys(defaults) as ContentKey[]).filter(key=>form.has(key)).map(key=>({key,value:String(form.get(key)||'').trim()}));if(!values.length||values.some(x=>{const heading=x.key.endsWith('Heading')||x.key==='homeHeroTop'||x.key==='homeHeroBottom'||x.key.startsWith('homeClosingHeading'),compact=x.key.endsWith('Label')||x.key.endsWith('Link')||x.key.endsWith('Button')||x.key.endsWith('Eyebrow');return x.value.length<(heading?3:compact?2:20)||x.value.length>(heading?120:compact?80:1500)}))throw new Error('Controleer de lengte van de ingevulde teksten.');for(const item of values)await db.insert(siteContent).values(item).onConflictDoUpdate({target:siteContent.key,set:{value:item.value}});for(const route of ['/','/over-mij','/werkwijze','/portfolio','/diensten/gezinnen','/diensten/huisdieren','/diensten/portretten'])revalidatePath(route);revalidatePath('/beheer/teksten');}
-export async function saveVisualContent(key:ContentKey,value:string){await allowed();const pages=visualPages.filter(x=>x.fields.some(field=>field[0]===key));if(!pages.length)throw new Error('Onbekend tekstveld.');const clean=value.trim();const heading=key.endsWith('Heading')||key==='homeHeroTop'||key==='homeHeroBottom'||key.startsWith('homeClosingHeading');const compact=key.endsWith('Label')||key.endsWith('Link')||key.endsWith('Button')||key.endsWith('Eyebrow');const min=heading?3:compact?2:20,max=heading?120:compact?80:1500;if(clean.length<min||clean.length>max)throw new Error(`Gebruik ${min} tot ${max} tekens voor deze tekst.`);await getDb().insert(siteContent).values({key,value:clean}).onConflictDoUpdate({target:siteContent.key,set:{value:clean}});for(const page of pages)revalidatePath(page.path);revalidatePath('/beheer/teksten');return clean;}
+export async function saveVisualContents(changes:unknown){
+ await allowed();
+ const values=parseContentChanges(changes);
+ // One Postgres statement: either every valid field is saved, or none is.
+ await getDb().insert(siteContent).values(values).onConflictDoUpdate({target:siteContent.key,set:{value:sql`excluded.value`}});
+ const keys=new Set(values.map(item=>item.key));
+ for(const page of visualPages)if(page.fields.some(field=>keys.has(field[0])))revalidatePath(page.path);
+ revalidatePath('/beheer/teksten');revalidatePath('/beheer/teksten/lijst');
+ return Object.fromEntries(values.map(item=>[item.key,item.value])) as Partial<Record<ContentKey,string>>;
+}
+export async function saveContent(form:FormData){
+ const changes=Object.fromEntries((Object.keys(defaults) as ContentKey[]).filter(key=>form.has(key)).map(key=>[key,form.get(key)]));
+ await saveVisualContents(changes);
+}
+export async function saveVisualContent(key:ContentKey,value:string){
+ const result=await saveVisualContents({[key]:value});return result[key]!;
+}
+export async function savePhotoFocus(form:FormData){
+ await allowed();
+ const key=String(form.get('imageKey')||'');
+ const image=(await getDb().select().from(portfolio).where(eq(portfolio.imageKey,key)).limit(1))[0];
+ if(!image)throw new Error('Foto niet gevonden.');
+ const focus=parsePhotoFocus(Object.fromEntries(['x','y','mobileX','mobileY'].map(name=>[name,Number(form.get(name))])));
+ if(['x','y','mobileX','mobileY'].some(name=>form.get(name)===null))throw new Error('Controleer de uitsnede.');
+ const value=JSON.stringify(focus);
+ await getDb().insert(siteContent).values({key:'portfolio:focus:'+key,value}).onConflictDoUpdate({target:siteContent.key,set:{value}});
+ for(const path of ['/','/portfolio','/portfolio/gezinnen','/portfolio/huisdieren','/portfolio/portretten','/diensten/gezinnen','/diensten/huisdieren','/diensten/portretten','/beheer/portfolio'])revalidatePath(path);
+}
+export async function setHeroImage(form:FormData){
+ await allowed();const imageKey=String(form.get('imageKey')||'');
+ const db=getDb();const image=(await db.select().from(portfolio).where(and(eq(portfolio.imageKey,imageKey),eq(portfolio.published,true))).limit(1))[0];
+ if(!image)throw new Error('Kies een gepubliceerde portfoliofoto.');
+ await db.insert(siteContent).values({key:'portfolio:hero',value:image.imageKey}).onConflictDoUpdate({target:siteContent.key,set:{value:image.imageKey}});
+ revalidatePath('/');revalidatePath('/beheer/portfolio');
+}
 export async function saveHomeBlocks(value:unknown){
  await allowed();
  const blocks=parseHomeBlocks(value);
@@ -100,7 +149,7 @@ export async function deletePhoto(form: FormData) {
   else {const row=(await getDb().select().from(photos).where(eq(photos.id,id)))[0];if(row){await getDb().delete(photos).where(eq(photos.id,id));await env.BUCKET!.delete(row.imageKey);}}
   for(const route of ['/','/portfolio','/portfolio/gezinnen','/portfolio/huisdieren','/portfolio/portretten','/beheer/portfolio'])revalidatePath(route);
 }
-export async function saveSeo(form:FormData){await allowed();const path=String(form.get('path'));if(!seoPages.some(x=>x.path===path))throw new Error('Onbekende pagina.');const title=String(form.get('title')||'').trim(),description=String(form.get('description')||'').trim();if(title.length<15||title.length>75||description.length<50||description.length>200)throw new Error('Controleer de lengte van titel en beschrijving.');const db=getDb();for(const [key,value] of [[`seo:${path}:title`,title],[`seo:${path}:description`,description]])await db.insert(siteContent).values({key,value}).onConflictDoUpdate({target:siteContent.key,set:{value}});revalidatePath(path);revalidatePath('/beheer/seo');}
+export async function saveSeo(form:FormData){await allowed();const path=String(form.get('path'));if(!seoPages.some(x=>x.path===path))throw new Error('Onbekende pagina.');const title=String(form.get('title')||'').trim(),description=String(form.get('description')||'').trim();if(title.length<15||title.length>75||description.length<50||description.length>200)throw new Error('Controleer de lengte van titel en beschrijving.');const db=getDb();await db.insert(siteContent).values([{key:`seo:${path}:title`,value:title},{key:`seo:${path}:description`,value:description}]).onConflictDoUpdate({target:siteContent.key,set:{value:sql`excluded.value`}});revalidatePath(path);revalidatePath('/beheer/seo');}
 
 async function initializeFaqs(){
  const db=getDb();

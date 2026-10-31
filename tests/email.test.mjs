@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {emailConfiguration,sendConfiguredEmail,deliverAppointmentEmails} from '../lib/email.mjs';
+import {emailConfiguration,sendConfiguredEmail,deliverAppointmentEmails,checkEmailConnection} from '../lib/email.mjs';
 const env={RESEND_API_KEY:'test-only-key',CONTACT_EMAIL_FROM:'Bas Fotografie <bas@example.invalid>',CONTACT_EMAIL_TO:'owner@example.invalid',VERCEL_ENV:'production'};
 const request={id:'test-request',email:'client@example.invalid'};
 const template={subject:'Test',html:'<p>Test</p>',text:'Test'};
@@ -29,4 +29,15 @@ test('one provider failure does not prevent the other notification and never lea
  let count=0;const result=await deliverAppointmentEmails(request,{client:template,owner:template},env,async()=>++count===1?new Response('sensitive provider body',{status:403}):Response.json({id:'provider-test-id'}));
  assert.equal(count,2);assert.equal(result.status,'failed');assert.deepEqual(result.results,[{channel:'client',status:'failed',reason:'email_provider_403'},{channel:'owner',status:'sent'}]);
  await assert.rejects(sendConfiguredEmail({to:'client@example.invalid',...template,subject:'Bad\nsubject',reference:'test'},env),/email_input_invalid/);
+});
+test('email setup check only reads domains and distinguishes a limited key from a verified sender',async()=>{
+ const calls=[];
+ const verified=await checkEmailConnection(env,async(url,options)=>{calls.push({url,options});return Response.json({data:[{name:'example.invalid',status:'verified'}]});});
+ assert.equal(verified.ok,true);assert.match(verified.message,/apart/);
+ assert.equal(calls.length,1);assert.equal(calls[0].url,'https://api.resend.com/domains');
+ assert.equal(calls[0].options.method,undefined);assert.equal(calls[0].options.body,undefined);
+ const limited=await checkEmailConnection(env,async()=>new Response('sensitive provider response',{status:403}));
+ assert.equal(limited.ok,false);assert.match(limited.message,/sleutel staat geen/);assert.equal(limited.message.includes('sensitive'),false);
+ const testSender=await checkEmailConnection({...env,CONTACT_EMAIL_FROM:'onboarding@resend.dev'},()=>{throw Error('must not fetch');});
+ assert.match(testSender.message,/testafzender/);
 });

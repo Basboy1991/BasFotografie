@@ -1,8 +1,8 @@
 
 export const coreBlocks=[
  {id:'hero',type:'core',label:'Intro en hoofdbeeld'},
- {id:'services',type:'core',label:'Fotografie en diensten'},
  {id:'portfolio',type:'core',label:'Portfolioalbums'},
+ {id:'services',type:'core',label:'Fotografie en diensten'},
  {id:'closing',type:'core',label:'Kennismaken'},
 ] as const;
 export type CoreBlock={id:(typeof coreBlocks)[number]['id'];type:'core'};
