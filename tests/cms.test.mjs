@@ -223,6 +223,20 @@ test('public editable copy excludes internal CMS data and metadata reflects save
   assert.equal(meta.twitter.description,meta.description);
 });
 
+test('preview metadata explicitly prevents indexing and a saved brand title is not duplicated',async()=>{
+  await actions.saveSeo(form({path:'/over-mij',title:'Over Bas | Bas Fotografie',description:'Maak kennis met Bas en zijn warme fotografie voor gezinnen, huisdieren en portretten in het Westland.'}));
+  const previous=process.env.VERCEL_ENV;
+  try{
+    process.env.VERCEL_ENV='preview';
+    const meta=await metadata.pageMetadata('/over-mij');
+    assert.deepEqual(meta.robots,{index:false,follow:false});
+    assert.deepEqual(meta.title,{absolute:'Over Bas | Bas Fotografie'});
+    process.env.VERCEL_ENV='production';
+    assert.equal('robots' in await metadata.pageMetadata('/over-mij'),false);
+    assert.deepEqual((await metadata.pageMetadata('/over-mij',{noIndex:true})).robots,{index:false,follow:true});
+  }finally{if(previous===undefined)delete process.env.VERCEL_ENV;else process.env.VERCEL_ENV=previous;}
+});
+
 const booking=(changes={})=>form({submissionId:crypto.randomUUID(),name:'Controle aanvraag',email:'CHECK@example.invalid',type:'Gezin',message:'Een geïsoleerde test zonder externe e-mail.',...changes});
 test('booking persists once, records delivery status and duplicate submission does not send twice',async()=>{
   const submission=booking(),id=submission.get('submissionId');
