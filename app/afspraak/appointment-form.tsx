@@ -22,7 +22,7 @@ export default function AppointmentForm({today,submissionId}:{today:string;submi
    </div>
    <div className="field"><label htmlFor="message">Wensen of vragen</label><textarea id="message" name="message" maxLength={3000} placeholder="Wie wil je op de foto, en wat vind je belangrijk?" value={fields.message} onChange={e=>change('message',e.target.value)}/></div>
    <div className="trap" aria-hidden="true"><label htmlFor="website">Website</label><input id="website" name="website" tabIndex={-1} autoComplete="off"/></div>
-   <p className="form-note">Ik gebruik je gegevens om op je aanvraag te reageren. Lees meer op de <Link href="/privacy">privacypagina</Link>. Bekijk ook de <Link href="/voorwaarden">praktische afspraken</Link> en <Link href="/veelgestelde-vragen">veelgestelde vragen</Link>.</p>
+   <p className="form-note">Ik gebruik je gegevens om op je aanvraag te reageren. Lees meer op de <Link href="/privacy">privacypagina</Link>. Bekijk de <Link href="/voorbereiding">voorbereidingstips</Link>, de <Link href="/voorwaarden">praktische afspraken</Link> en <Link href="/veelgestelde-vragen">veelgestelde vragen</Link>.</p>
    <button className="button" type="submit">{pending?'Aanvraag versturen…':'Verstuur aanvraag ↗'}</button>
   </fieldset>
   {state.message&&<p ref={error} className="cms-save-message is-error" role="alert" tabIndex={-1}>{state.message}</p>}

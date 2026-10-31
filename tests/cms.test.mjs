@@ -12,7 +12,7 @@ const fixture = globalThis.__bfCms = {modules: {}, paths: [], session: null, db:
 const moduleUrl = code => 'data:text/javascript,' + encodeURIComponent(code).replaceAll("'", '%27');
 function namespace(name, value) {
   fixture.modules[name] = value;
-  return moduleUrl(Object.keys(value).map(key => `export const ${key}=globalThis.__bfCms.modules[${JSON.stringify(name)}][${JSON.stringify(key)}];`).join('\n'));
+  return moduleUrl(Object.keys(value).map(key => key==='default'?`export default globalThis.__bfCms.modules[${JSON.stringify(name)}].default;`:`export const ${key}=globalThis.__bfCms.modules[${JSON.stringify(name)}][${JSON.stringify(key)}];`).join('\n'));
 }
 async function load(path, replacements = {}) {
   let source = await readFile(new URL(path, import.meta.url), 'utf8');
@@ -48,19 +48,35 @@ const seoData = await load('../app/seo-data.ts', deps);
 deps['./seo-data'] = namespace('seoData', seoData);
 const faqData = await load('../app/faq-data.ts', deps);
 deps['./faq-data'] = namespace('faqData', faqData);
-const metadata = await load('../app/metadata.ts',{'./seo-data':deps['./seo-data']});
-deps['./metadata']=namespace('metadata',metadata);
-const publicFaq = await load('../app/veelgestelde-vragen/page.tsx', {
-  '../faq-data': deps['./faq-data'], '../seo-data':deps['./seo-data'], '../content':deps['./content'],
-  '../metadata':deps['./metadata'], '../../lib/structured-data.mjs':import.meta.resolve('../lib/structured-data.mjs'),
-  'next/link':moduleUrl(`import {createElement} from '${import.meta.resolve('react')}';export default function Link(props){return createElement('a',props,props.children);}`),
-});
 const assets = await load('../app/portfolio-assets.ts');
 deps['./portfolio-assets'] = namespace('assets', assets);
 const manifest=JSON.parse(await readFile(new URL('../app/portfolio-image-manifest.json',import.meta.url),'utf8'));
 const presentation=await load('../app/photo-presentation.ts',{'./portfolio-assets':deps['./portfolio-assets'],'./portfolio-image-manifest.json':moduleUrl('export default '+JSON.stringify(manifest))});
 deps['./photo-presentation']=namespace('presentation',presentation);
 const portfolioData = await load('../app/portfolio-data.ts', deps);
+const metadata = await load('../app/metadata.ts',{...deps,'./portfolio-data':namespace('portfolioData',portfolioData)});
+deps['./metadata']=namespace('metadata',metadata);
+const publicFaq = await load('../app/veelgestelde-vragen/page.tsx', {
+  '../faq-data': deps['./faq-data'], '../seo-data':deps['./seo-data'], '../content':deps['./content'],
+  '../metadata':deps['./metadata'], '../../lib/structured-data.mjs':import.meta.resolve('../lib/structured-data.mjs'),
+  'next/link':moduleUrl(`import {createElement} from '${import.meta.resolve('react')}';export default function Link(props){return createElement('a',props,props.children);}`),
+});
+const link=moduleUrl(`import {createElement} from '${import.meta.resolve('react')}';export default function Link(props){return createElement('a',props,props.children);}`);
+const businessModule=await load('../app/business.ts');
+const schemaHelpers=await load('../app/site-schema.ts',{'./business':namespace('business',businessModule),'./site-url':moduleUrl('export const siteUrl="https://bas-fotografie.vercel.app";')});
+const breadcrumbs=await load('../app/components/breadcrumbs.tsx',{'next/link':link,'../../lib/structured-data.mjs':import.meta.resolve('../lib/structured-data.mjs'),'../site-schema':namespace('schemaHelpers',schemaHelpers)});
+const publicPhoto=await load('../app/components/public-photo.tsx',{'../photo-presentation':deps['./photo-presentation']});
+const serviceDetails=await load('../app/components/service-details.tsx',{'next/link':link});
+const publicDeps={'next/link':link,'../business':namespace('businessPage',businessModule),'../content':deps['./content'],'../metadata':deps['./metadata'],'../components/breadcrumbs':namespace('breadcrumbs',breadcrumbs)};
+const publicContact=await load('../app/contact/page.tsx',publicDeps);
+const publicPreparation=await load('../app/voorbereiding/page.tsx',publicDeps);
+const publicFamilies=await load('../app/diensten/gezinnen/page.tsx',{
+ 'next/link':link,'../../content':deps['./content'],'../../metadata':deps['./metadata'],'../../portfolio-data':namespace('familyPortfolio',portfolioData),
+ '../../components/breadcrumbs':namespace('familyBreadcrumbs',breadcrumbs),'../../components/service-details':namespace('serviceDetails',serviceDetails),
+ '../../components/public-photo':namespace('publicPhoto',publicPhoto),'../../site-schema':namespace('serviceSchema',schemaHelpers),'../../../lib/structured-data.mjs':import.meta.resolve('../lib/structured-data.mjs'),
+});
+const sitemap=await load('../app/sitemap.xml/route.ts',{'../../lib/structured-data.mjs':import.meta.resolve('../lib/structured-data.mjs'),'../seo-data':deps['./seo-data'],'../site-url':moduleUrl('export const siteUrl="https://bas-fotografie.vercel.app";'),'../portfolio-data':namespace('sitemapPortfolio',portfolioData)});
+const categoryPage=await load('../app/portfolio/[categorie]/page.tsx',{'next/link':link,'next/navigation':moduleUrl('export function notFound(){throw new Error("not_found");}'),'../../metadata':deps['./metadata'],'../../../lib/structured-data.mjs':import.meta.resolve('../lib/structured-data.mjs'),'../../site-url':moduleUrl('export const siteUrl="https://bas-fotografie.vercel.app";'),'../../components/public-photo':namespace('albumPhoto',publicPhoto),'../../portfolio-data':namespace('albumData',portfolioData),'../../content':deps['./content']});
 const actions = await load('../app/actions.ts', {
   ...deps,
   './owner-auth': moduleUrl('export async function getOwnerSession(){return globalThis.__bfCms.session;}'),
@@ -282,4 +298,76 @@ test('booking rate limit still permits retrying an already saved submission',asy
   await assert.rejects(actions.submitAppointment({message:''},submissions[0]),/redirect:\/afspraak\/bedankt/);
   assert.equal((await postgres.query('SELECT * FROM requests')).rows.length,3);
   assert.equal(fixture.emails.length,3);
+});
+
+test('new preparation and contact copy is editable and renders the saved text and useful links',async()=>{
+ await actions.saveVisualContents({prepClothingBody:'Mijn eigen kledingadvies staat na opslaan op de voorbereidingspagina.',contactAreaBody:'Mijn eigen uitleg over locaties staat na opslaan op de contactpagina.'});
+ const prep=renderToStaticMarkup(await publicPreparation.default()),contact=renderToStaticMarkup(await publicContact.default());
+ assert.ok(prep.includes('Mijn eigen kledingadvies'));
+ assert.ok(prep.includes('id="huisdieren"'));
+ assert.ok(prep.includes('href="/diensten/huisdieren"'));
+ assert.ok(contact.includes('Mijn eigen uitleg over locaties'));
+ assert.ok(contact.includes('href="tel:+31644733404"'));
+ assert.ok(contact.includes('href="/afspraak"'));
+ assert.ok(fixture.paths.includes('/voorbereiding'));
+ assert.ok(fixture.paths.includes('/contact'));
+});
+
+test('service copy is editable and JSON-LD agrees with the public page without fabricated business claims',async()=>{
+ await actions.saveVisualContents({familyPracticalBody:'Een eigen toelichting op mijn gezinsfotoshoot in het Westland.',serviceDeliveryBody:'Een eigen toelichting over het ontvangen van de afgesproken digitale foto’s.'});
+ const html=renderToStaticMarkup(await publicFamilies.default());
+ assert.ok(html.includes('Een eigen toelichting op mijn gezinsfotoshoot'));
+ assert.ok(html.includes('Een eigen toelichting over het ontvangen'));
+ const scripts=Array.from(html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g),match=>JSON.parse(match[1]));
+ const service=scripts.find(item=>item['@type']==='Service');
+ assert.equal(service.description,(await content.readContent()).familyIntro);
+ const organization=schemaHelpers.websiteGraph()['@graph'].find(item=>item['@type']==='Organization');
+ assert.equal(service.provider['@id'],organization['@id']);
+ assert.equal(organization.address,undefined);
+ assert.equal(organization.aggregateRating,undefined);
+ assert.equal(service.offers,undefined);
+ assert.ok(fixture.paths.includes('/diensten/gezinnen'));
+ assert.ok(fixture.paths.includes('/diensten/huisdieren'));
+ assert.ok(fixture.paths.includes('/diensten/portretten'));
+});
+
+test('share images match the published service category and hidden photos cannot become share images',async()=>{
+ await postgres.query("INSERT INTO portfolio (id,title,category,image_key,position,alt_text,published) VALUES ('visible-family','Eigen gezinsfoto','Gezin','aangeleverd-kind-76912',1,'Gezinsfoto buiten',true),('hidden-family','Verborgen foto','Gezin','aangeleverd-kind-956',0,'Niet publiceren',false)");
+ const meta=await metadata.pageMetadata('/diensten/gezinnen');
+ assert.equal(meta.openGraph.images[0].url,'/portfolio-eigen/kind-in-het-groen.jpg');
+ assert.equal(meta.openGraph.images[0].alt,'Gezinsfoto buiten');
+ assert.equal(meta.twitter.images[0],meta.openGraph.images[0].url);
+ await postgres.query("UPDATE portfolio SET published=false WHERE id='visible-family'");
+ const fallback=await metadata.pageMetadata('/diensten/gezinnen');
+ assert.equal(fallback.openGraph.images[0].url,'/portfolio-eigen/hond-met-speeltje.jpg');
+});
+
+test('sitemap discovers the new information pages and excludes sample albums and private routes',async()=>{
+ const response=await sitemap.GET(),xml=await response.text();
+ assert.ok(xml.includes('/contact</loc>'));
+ assert.ok(xml.includes('/voorbereiding</loc>'));
+ assert.ok(xml.includes('/voorwaarden</loc>'));
+ assert.equal(xml.includes('/portfolio/gezinnen</loc>'),false);
+ assert.equal(xml.includes('/beheer'),false);
+ assert.equal(xml.includes('/album/'),false);
+ assert.equal(xml.includes('/voorbeeld'),false);
+});
+
+test('SEO title and description roll back together when storage rejects either value',async()=>{
+ const title='Bestaande SEO-titel voor contact',description='Deze oorspronkelijke beschrijving voor de contactpagina blijft volledig behouden.';
+ await actions.saveSeo(form({path:'/contact',title,description}));
+ const rejected='Deze nieuwe beschrijving wordt voor de volledige opslagtest door de database geweigerd.';
+ await postgres.exec(`ALTER TABLE site_content ADD CONSTRAINT reject_seo_update CHECK (value <> '${rejected}');`);
+ try{
+  await assert.rejects(actions.saveSeo(form({path:'/contact',title:'Een nieuwere SEO-titel voor contact',description:rejected})));
+  assert.deepEqual(await seoData.readSeo('/contact'),{title,description});
+ }finally{await postgres.exec('ALTER TABLE site_content DROP CONSTRAINT reject_seo_update;');}
+});
+
+test('unknown and inherited-property album names cannot render an indexable album',async()=>{
+ for(const categorie of ['onbekend','constructor','toString']){
+  const params=Promise.resolve({categorie});
+  assert.equal((await categoryPage.generateMetadata({params})).robots.index,false);
+  await assert.rejects(categoryPage.default({params}),/not_found/);
+ }
 });

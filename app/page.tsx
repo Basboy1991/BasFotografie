@@ -7,7 +7,8 @@ import {readContent} from './content';
 import {type HomeBlock} from './home-blocks';
 import {readHomeBlocks} from './home-blocks-data';
 import {categories, getPortfolio, type CategorySlug} from './portfolio-data';
-import {siteUrl} from './site-url';
+import {websiteGraph} from './site-schema';
+import {jsonLd} from '../lib/structured-data.mjs';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,10 +24,7 @@ export default async function Home() {
   const [{images, sample, heroSample, heroImages}, copy, blocks] = await Promise.all([
     getPortfolio(), readContent(), readHomeBlocks(),
   ]);
-  const graph = {
-    '@context': 'https://schema.org', '@type': 'WebSite',
-    name: 'Bas Fotografie', url: siteUrl, inLanguage: 'nl-NL',
-  };
+  const graph = websiteGraph();
 
   function render(block: HomeBlock) {
     if (block.type === 'core') {
@@ -143,7 +141,7 @@ export default async function Home() {
 
   return (
     <main className="home-page">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(graph).replace(/</g, '\\u003c')}}/>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{__html: jsonLd(graph)}}/>
       {blocks.map(render)}
     </main>
   );

@@ -42,6 +42,8 @@ export default function SiteHeader() {
               <Link href={href} key={href} aria-current={current(href) ? 'page' : undefined}>{label}</Link>
             ))}
             <Link href="/veelgestelde-vragen" aria-current={current('/veelgestelde-vragen') ? 'page' : undefined}>Veelgestelde vragen</Link>
+            <Link href="/voorbereiding" aria-current={current('/voorbereiding') ? 'page' : undefined}>Voorbereiding</Link>
+            <Link href="/contact" aria-current={current('/contact') ? 'page' : undefined}>Contact</Link>
             <Link href="/afspraak" className="nav-cta">Plan je shoot</Link>
           </nav>
         </details>
