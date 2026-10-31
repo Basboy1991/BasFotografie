@@ -9,3 +9,4 @@ private/
 *.tar
 *.tsbuildinfo
 app/beheer/export/generated/
+public/portfolio-web/

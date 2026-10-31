@@ -1,0 +1,205 @@
+{
+  "/portfolio-eigen/hond-met-speeltje.jpg": {
+    "width": 1536,
+    "height": 1152,
+    "variants": [
+      {
+        "width": 360,
+        "url": "/portfolio-web/hond-met-speeltje-a5c83d392f89-360.webp",
+        "bytes": 17574
+      },
+      {
+        "width": 720,
+        "url": "/portfolio-web/hond-met-speeltje-a5c83d392f89-720.webp",
+        "bytes": 50614
+      },
+      {
+        "width": 1200,
+        "url": "/portfolio-web/hond-met-speeltje-a5c83d392f89-1200.webp",
+        "bytes": 101460
+      },
+      {
+        "width": 1536,
+        "url": "/portfolio-web/hond-met-speeltje-a5c83d392f89-1536.webp",
+        "bytes": 142844
+      }
+    ]
+  },
+  "/portfolio-eigen/hond-op-terras.jpg": {
+    "width": 1536,
+    "height": 1152,
+    "variants": [
+      {
+        "width": 360,
+        "url": "/portfolio-web/hond-op-terras-4137a62dae69-360.webp",
+        "bytes": 19906
+      },
+      {
+        "width": 720,
+        "url": "/portfolio-web/hond-op-terras-4137a62dae69-720.webp",
+        "bytes": 63834
+      },
+      {
+        "width": 1200,
+        "url": "/portfolio-web/hond-op-terras-4137a62dae69-1200.webp",
+        "bytes": 149934
+      },
+      {
+        "width": 1536,
+        "url": "/portfolio-web/hond-op-terras-4137a62dae69-1536.webp",
+        "bytes": 246904
+      }
+    ]
+  },
+  "/portfolio-eigen/hondenportret.jpg": {
+    "width": 1536,
+    "height": 1152,
+    "variants": [
+      {
+        "width": 360,
+        "url": "/portfolio-web/hondenportret-5981bfadae7b-360.webp",
+        "bytes": 6092
+      },
+      {
+        "width": 720,
+        "url": "/portfolio-web/hondenportret-5981bfadae7b-720.webp",
+        "bytes": 18172
+      },
+      {
+        "width": 1200,
+        "url": "/portfolio-web/hondenportret-5981bfadae7b-1200.webp",
+        "bytes": 42874
+      },
+      {
+        "width": 1536,
+        "url": "/portfolio-web/hondenportret-5981bfadae7b-1536.webp",
+        "bytes": 68732
+      }
+    ]
+  },
+  "/portfolio-eigen/kind-als-kok.jpg": {
+    "width": 1800,
+    "height": 1350,
+    "variants": [
+      {
+        "width": 360,
+        "url": "/portfolio-web/kind-als-kok-da34817907f0-360.webp",
+        "bytes": 5284
+      },
+      {
+        "width": 720,
+        "url": "/portfolio-web/kind-als-kok-da34817907f0-720.webp",
+        "bytes": 14992
+      },
+      {
+        "width": 1200,
+        "url": "/portfolio-web/kind-als-kok-da34817907f0-1200.webp",
+        "bytes": 31120
+      },
+      {
+        "width": 1800,
+        "url": "/portfolio-web/kind-als-kok-da34817907f0-1800.webp",
+        "bytes": 58282
+      }
+    ]
+  },
+  "/portfolio-eigen/kind-in-het-groen.jpg": {
+    "width": 1157,
+    "height": 1536,
+    "variants": [
+      {
+        "width": 360,
+        "url": "/portfolio-web/kind-in-het-groen-460bb51ba825-360.webp",
+        "bytes": 20502
+      },
+      {
+        "width": 720,
+        "url": "/portfolio-web/kind-in-het-groen-460bb51ba825-720.webp",
+        "bytes": 61230
+      },
+      {
+        "width": 1157,
+        "url": "/portfolio-web/kind-in-het-groen-460bb51ba825-1157.webp",
+        "bytes": 123328
+      }
+    ]
+  },
+  "/portfolio-eigen/meisje-bij-boom.jpg": {
+    "width": 1350,
+    "height": 1800,
+    "variants": [
+      {
+        "width": 360,
+        "url": "/portfolio-web/meisje-bij-boom-7ffd4c252cc8-360.webp",
+        "bytes": 40006
+      },
+      {
+        "width": 720,
+        "url": "/portfolio-web/meisje-bij-boom-7ffd4c252cc8-720.webp",
+        "bytes": 138374
+      },
+      {
+        "width": 1200,
+        "url": "/portfolio-web/meisje-bij-boom-7ffd4c252cc8-1200.webp",
+        "bytes": 338550
+      },
+      {
+        "width": 1350,
+        "url": "/portfolio-web/meisje-bij-boom-7ffd4c252cc8-1350.webp",
+        "bytes": 420926
+      }
+    ]
+  },
+  "/portfolio-eigen/moeder-en-kind-met-kerst.jpg": {
+    "width": 1350,
+    "height": 1800,
+    "variants": [
+      {
+        "width": 360,
+        "url": "/portfolio-web/moeder-en-kind-met-kerst-cf9bdd9dcbf3-360.webp",
+        "bytes": 19788
+      },
+      {
+        "width": 720,
+        "url": "/portfolio-web/moeder-en-kind-met-kerst-cf9bdd9dcbf3-720.webp",
+        "bytes": 77354
+      },
+      {
+        "width": 1200,
+        "url": "/portfolio-web/moeder-en-kind-met-kerst-cf9bdd9dcbf3-1200.webp",
+        "bytes": 210884
+      },
+      {
+        "width": 1350,
+        "url": "/portfolio-web/moeder-en-kind-met-kerst-cf9bdd9dcbf3-1350.webp",
+        "bytes": 275996
+      }
+    ]
+  },
+  "/portfolio-eigen/slapende-baby.jpg": {
+    "width": 1536,
+    "height": 1152,
+    "variants": [
+      {
+        "width": 360,
+        "url": "/portfolio-web/slapende-baby-6c6187d8410a-360.webp",
+        "bytes": 7412
+      },
+      {
+        "width": 720,
+        "url": "/portfolio-web/slapende-baby-6c6187d8410a-720.webp",
+        "bytes": 19262
+      },
+      {
+        "width": 1200,
+        "url": "/portfolio-web/slapende-baby-6c6187d8410a-1200.webp",
+        "bytes": 42836
+      },
+      {
+        "width": 1536,
+        "url": "/portfolio-web/slapende-baby-6c6187d8410a-1536.webp",
+        "bytes": 68968
+      }
+    ]
+  }
+}

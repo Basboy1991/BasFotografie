@@ -1,4 +1,5 @@
 'use server';
+import {parsePhotoFocus} from './photo-presentation';
 import {bundledPortfolioAssets} from './portfolio-assets';
 import { getDb } from '@/db';
 import { owner, portfolio, requests, albums, photos, siteContent, pricing, faqs } from '@/db/schema';
@@ -36,20 +37,34 @@ export async function claimOwner() {
   if (rows[0]?.userId !== user.userId) throw new Error('Beheer is al toegewezen.');
   revalidatePath('/beheer');
 }
-export async function requestAppointment(form: FormData) {
-  const name=String(form.get('name')||'').trim(), email=String(form.get('email')||'').trim(), type=String(form.get('type')||'').trim();
-  const date=String(form.get('date')||''), message=String(form.get('message')||'').trim();
-  if (form.get('website')) redirect('/afspraak/bedankt');
-  if (name.length<2 || name.length>120 || email.length>254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !['Gezin','Huisdier','Portret','Anders'].includes(type) || date.length>10 || message.length>3000) throw new Error('Controleer je gegevens.');
-  if(date){const parsed=new Date(`${date}T12:00:00Z`);const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||Number.isNaN(parsed.getTime())||parsed.toISOString().slice(0,10)!==date||date<today)throw new Error('Kies een geldige datum vanaf vandaag.');}
-  const recent=await getDb().select({count:sql<number>`count(*)`}).from(requests).where(and(eq(requests.email,email.toLowerCase()),gte(requests.createdAt,Date.now()-3600000)));
-  if (Number(recent[0]?.count||0)>=3) throw new Error('Je hebt al meerdere aanvragen verstuurd. Probeer het later opnieuw.');
-  const item={id:crypto.randomUUID(),name,email:email.toLowerCase(),type,date,message,createdAt:Date.now(),status:'nieuw'};
-  await getDb().insert(requests).values(item);
-  const delivery=await deliverAppointmentEmails(item,{client:clientReceipt(name,item.id),owner:ownerNotice(item.id)});
-  if(delivery.status==='failed'||delivery.status==='not_configured')console.error('appointment_email_delivery',{id:item.id,status:delivery.status,results:delivery.results});
-  redirect('/afspraak/bedankt');
+async function storeAppointment(form:FormData){
+ const name=String(form.get('name')||'').trim(),email=String(form.get('email')||'').trim().toLowerCase(),type=String(form.get('type')||'').trim();
+ const date=String(form.get('date')||''),message=String(form.get('message')||'').trim();
+ if(form.get('website'))return {ok:true} as const;
+ if(name.length<2||name.length>120||email.length>254||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||!['Gezin','Huisdier','Portret','Anders'].includes(type)||date.length>10||message.length>3000)return {ok:false,message:'Controleer je naam, e-mailadres en soort fotosessie.'} as const;
+ if(date){const parsed=new Date(`${date}T12:00:00Z`);const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||Number.isNaN(parsed.getTime())||parsed.toISOString().slice(0,10)!==date||date<today)return {ok:false,message:'Kies een geldige datum vanaf vandaag.'} as const;}
+ const id=String(form.get('submissionId')||crypto.randomUUID());
+ if(!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(id))return {ok:false,message:'Open het formulier opnieuw en probeer het nog eens.'} as const;
+ const db=getDb();
+ if((await db.select({id:requests.id}).from(requests).where(eq(requests.id,id)).limit(1)).length)return {ok:true} as const;
+ const recent=await db.select({count:sql<number>`count(*)`}).from(requests).where(and(eq(requests.email,email),gte(requests.createdAt,Date.now()-3600000)));
+ if(Number(recent[0]?.count||0)>=3)return {ok:false,message:'Je hebt al meerdere aanvragen verstuurd. Probeer het later opnieuw of mail me rechtstreeks.'} as const;
+ const item={id,name,email,type,date,message,createdAt:Date.now(),status:'nieuw'};
+ const inserted=await db.insert(requests).values(item).onConflictDoNothing().returning({id:requests.id});
+ if(!inserted.length)return {ok:true} as const;
+ let delivery:{status:string}={status:'failed'};
+ try{delivery=await deliverAppointmentEmails(item,{client:clientReceipt(name,id),owner:ownerNotice(id)});}catch{}
+ try{const key=`request:email:${id}`;await db.insert(siteContent).values({key,value:delivery.status}).onConflictDoUpdate({target:siteContent.key,set:{value:delivery.status}});}catch{console.error('appointment_email_status_unavailable',{id});}
+ revalidatePath('/beheer');revalidatePath('/beheer/afspraken');
+ return {ok:true} as const;
 }
+export async function submitAppointment(_previous:{message:string},form:FormData):Promise<{message:string}>{
+ let result;
+ try{result=await storeAppointment(form);}catch{return {message:'Opslaan is niet gelukt. Je invoer staat er nog. Probeer opnieuw of mail me rechtstreeks.'};}
+ if(!result.ok)return {message:result.message};
+ redirect('/afspraak/bedankt');
+}
+export async function requestAppointment(form:FormData){const result=await storeAppointment(form);if(!result.ok)throw new Error(result.message);redirect('/afspraak/bedankt');}
 export async function setRequestStatus(form: FormData) {
   await allowed(); const id=String(form.get('id')), status=String(form.get('status'));
   if (!['nieuw','in behandeling','afgerond'].includes(status)) throw new Error('Ongeldige status');
@@ -72,6 +87,17 @@ export async function saveContent(form:FormData){
 }
 export async function saveVisualContent(key:ContentKey,value:string){
  const result=await saveVisualContents({[key]:value});return result[key]!;
+}
+export async function savePhotoFocus(form:FormData){
+ await allowed();
+ const key=String(form.get('imageKey')||'');
+ const image=(await getDb().select().from(portfolio).where(eq(portfolio.imageKey,key)).limit(1))[0];
+ if(!image)throw new Error('Foto niet gevonden.');
+ const focus=parsePhotoFocus(Object.fromEntries(['x','y','mobileX','mobileY'].map(name=>[name,Number(form.get(name))])));
+ if(['x','y','mobileX','mobileY'].some(name=>form.get(name)===null))throw new Error('Controleer de uitsnede.');
+ const value=JSON.stringify(focus);
+ await getDb().insert(siteContent).values({key:'portfolio:focus:'+key,value}).onConflictDoUpdate({target:siteContent.key,set:{value}});
+ for(const path of ['/','/portfolio','/portfolio/gezinnen','/portfolio/huisdieren','/portfolio/portretten','/diensten/gezinnen','/diensten/huisdieren','/diensten/portretten','/beheer/portfolio'])revalidatePath(path);
 }
 export async function setHeroImage(form:FormData){
  await allowed();const imageKey=String(form.get('imageKey')||'');

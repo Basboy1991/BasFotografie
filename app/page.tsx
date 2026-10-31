@@ -1,3 +1,5 @@
+import {pageMetadata} from './metadata';
+import PublicPhoto from './components/public-photo';
 import type {Metadata} from 'next';
 import Link from 'next/link';
 import HeroSlideshow from './components/hero-slideshow';
@@ -5,7 +7,6 @@ import {readContent} from './content';
 import {type HomeBlock} from './home-blocks';
 import {readHomeBlocks} from './home-blocks-data';
 import {categories, getPortfolio, type CategorySlug} from './portfolio-data';
-import {readSeo} from './seo-data';
 import {siteUrl} from './site-url';
 
 export const dynamic = 'force-dynamic';
@@ -16,14 +17,7 @@ const services = [
   ['portretten', 'homePortraitsLabel', 'homePortraitsHeading', 'homePortraitsDescription', 'homePortraitsLink'],
 ] as const;
 
-export async function generateMetadata(): Promise<Metadata> {
-  const seo = await readSeo('/');
-  return {
-    title: {absolute: seo?.title || 'Bas Fotografie'},
-    description: seo?.description,
-    alternates: {canonical: '/'},
-  };
-}
+export async function generateMetadata():Promise<Metadata>{return pageMetadata('/',{absoluteTitle:true});}
 
 export default async function Home() {
   const [{images, sample, heroSample, heroImages}, copy, blocks] = await Promise.all([
@@ -48,14 +42,12 @@ export default async function Home() {
                     <span data-edit-key="homeHeroTop">{copy.homeHeroTop}</span>{' '}
                     <em data-edit-key="homeHeroBottom">{copy.homeHeroBottom}</em>
                   </h1>
+                  <Link className="button home-hero-primary" href="/afspraak"><span data-edit-key="homeHeroButton">{copy.homeHeroButton}</span><span aria-hidden="true">↗</span></Link>
                 </div>
               </div>
               <div className="home-hero-caption">
                 <p data-edit-key="homeIntro">{copy.homeIntro}</p>
                 <div className="home-hero-actions">
-                  <Link className="button" href="/afspraak">
-                    <span data-edit-key="homeHeroButton">{copy.homeHeroButton}</span>
-                  </Link>
                   <Link className="text-link" href="/portfolio">Bekijk mijn werk <span aria-hidden="true">↗</span></Link>
                 </div>
               </div>
@@ -76,7 +68,7 @@ export default async function Home() {
                 {(Object.keys(categories) as CategorySlug[]).map((slug, index) => (
                   <Link className={`home-album home-album-${slug}`} href={`/portfolio/${slug}`} key={slug}>
                     <div className="home-album-image">
-                      <img src={images[index].url} alt={images[index].alt} loading="lazy"/>
+                      <PublicPhoto src={images[index].url} alt={images[index].alt} focus={images[index].focus} sizes="(max-width: 680px) calc(100vw - 48px), 32vw" loading="lazy"/>
                     </div>
                     <div className="home-album-caption">
                       <h3>{categories[slug].label}</h3>
@@ -123,6 +115,7 @@ export default async function Home() {
                 <p data-edit-key="homeClosingIntro">{copy.homeClosingIntro}</p>
               </div>
               <div className="home-closing-actions">
+                <Link className="text-link" href="/over-mij">Maak kennis met Bas <span aria-hidden="true">↗</span></Link>
                 <Link className="text-link" href="/tarieven">Pakketten &amp; tarieven <span aria-hidden="true">↗</span></Link>
                 <Link className="button" href="/afspraak">
                   <span data-edit-key="homeClosingButton">{copy.homeClosingButton}</span>
@@ -142,7 +135,7 @@ export default async function Home() {
             <p>{block.body}</p>
             {block.type === 'cta' && <Link className="button" href={block.href}>{block.button} ↗</Link>}
           </div>
-          {block.type === 'image' && <img src={`/api/image/${block.imageKey}`} alt={block.alt} loading="lazy"/>}
+          {block.type === 'image' && <PublicPhoto src={`/api/image/${block.imageKey}`} alt={block.alt} sizes="(max-width: 680px) calc(100vw - 48px), 45vw" loading="lazy"/>}
         </div>
       </section>
     );

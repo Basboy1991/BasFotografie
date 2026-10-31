@@ -2,7 +2,7 @@ import {defaults, type ContentKey} from './visual-fields';
 
 export function contentLimits(key: ContentKey) {
   const heading = key.endsWith('Heading') || key === 'homeHeroTop' || key === 'homeHeroBottom' || key.startsWith('homeClosingHeading');
-  const compact = key.endsWith('Label') || key.endsWith('Link') || key.endsWith('Button') || key.endsWith('Eyebrow');
+  const compact = key.endsWith('Label') || key.endsWith('Link') || key.endsWith('Button') || key.endsWith('Eyebrow') || key.endsWith('Quote') || key.endsWith('Signature');
   return {min: heading ? 3 : compact ? 2 : 20, max: heading ? 120 : compact ? 80 : 1500};
 }
 
